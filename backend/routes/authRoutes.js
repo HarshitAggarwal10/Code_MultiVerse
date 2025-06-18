@@ -2,12 +2,14 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const { getUserProfile } = require("../controllers/authController");
+const { protect } = require("../middleware/authMiddleware");
 
 // Google OAuth
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback",
     passport.authenticate("google", {
-        successRedirect: "http://localhost:5173",
+        successRedirect: "http://localhost:5173/domains",
         failureRedirect: "http://localhost:5173/login"
     })
 );
@@ -16,7 +18,7 @@ router.get("/google/callback",
 router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
 router.get("/github/callback",
     passport.authenticate("github", {
-        successRedirect: "http://localhost:5173",
+        successRedirect: "http://localhost:5173/domains",
         failureRedirect: "http://localhost:5173/login"
     })
 );
@@ -28,7 +30,7 @@ router.get("/discord", passport.authenticate("discord"));
 router.get(
   "/discord/callback",
   passport.authenticate("discord", {
-    successRedirect: "http://localhost:5173/", // your frontend route
+    successRedirect: "http://localhost:5173/domains", // your frontend route
     failureRedirect: "http://localhost:5173/login",
   })
 );
@@ -41,8 +43,10 @@ router.get("/user", (req, res) => {
 // Logout
 router.get("/logout", (req, res) => {
     req.logout(() => {
-        res.redirect("http://localhost:5173");
+        res.redirect("http://localhost:5173/auth");
     });
 });
+
+router.get("/profile", protect, getUserProfile);
 
 module.exports = router;

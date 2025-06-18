@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { FaGithub, FaGoogle, FaEnvelope, FaLock, FaUser, FaDiscord } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import { AuthContext } from "../context/AuthContext";
 
 export default function AuthPage() {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function AuthPage() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { login } = useContext(AuthContext);
     const handleSubmit = async (e) => {
         e.preventDefault();
         const endpoint = isLogin ? "http://localhost:5000/api/auth/login" : "http://localhost:5000/api/auth/signup";
@@ -27,7 +29,8 @@ export default function AuthPage() {
             const data = await res.json();
             if (res.ok) {
                 alert("Auth successful");
-                navigate(isLogin ? "/" : "/login");
+                login(data.user);
+                navigate(isLogin ? "/domains" : "/auth");
             } else {
                 alert(data.message || "Auth failed");
             }

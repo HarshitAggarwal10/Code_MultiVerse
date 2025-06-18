@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -12,6 +11,13 @@ import LearnMore from "./pages/LearnMore";
 import CoursePage from "./pages/Course";
 import CourseCard from "./components/CourseCard";
 import AuthPage from "./pages/Auth";
+import AuthProvider from './context/AuthContext';
+// import Dashboard from './pages/Dashboard';
+import Domains from './pages/Domains';
+import CourseDetails from './pages/CourseDetails';
+import MyCourses from './pages/MyCourses';
+import ProtectedRoute from './components/ProtectedRoute';
+import UserProfile from "./pages/UserProfile";
 
 function Layout() {
   const location = useLocation();
@@ -32,6 +38,11 @@ function Layout() {
           <Route path="/courses" element={<CoursePage />} />
           <Route path="/courses/:slug" element={<CourseCard />} />
           <Route path="/auth" element={<AuthPage />} />
+          {/* <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} /> */}
+          <Route path="/domains" element={<ProtectedRoute><Domains /></ProtectedRoute>} />
+          <Route path="/course/:id" element={<ProtectedRoute><CourseDetails /></ProtectedRoute>} />
+          <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
+          <Route path="/profile" element={<UserProfile />} />
         </Routes>
       </div>
       {!hideLayout && <Footer />}
@@ -41,9 +52,11 @@ function Layout() {
 
 function App() {
   return (
-    <Router>
-      <Layout />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Layout />
+      </Router>
+    </AuthProvider>
   );
 }
 
