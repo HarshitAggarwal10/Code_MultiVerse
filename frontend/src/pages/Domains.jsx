@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import Tech3DScene from "../components/Model";
 
@@ -6,6 +7,7 @@ export default function Domains() {
   const [domains, setDomains] = useState([]);
   const [subjectsByDomain, setSubjectsByDomain] = useState({});
   const [enrolledSubjects, setEnrolledSubjects] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -23,12 +25,13 @@ export default function Domains() {
         const myCoursesRes = await api.get('/user-courses/my-courses');
         const enrolledMap = {};
         myCoursesRes.data.forEach(course => {
-          const id = course.subjectId._id || course.subjectId; // Handle both cases
-          enrolledMap[id.toString()] = course.paymentStatus;
+          if (course.subject && course.subject._id) {
+            enrolledMap[course.subject._id.toString()] = course.paymentStatus;
+          }
         });
         setEnrolledSubjects(enrolledMap);
       } catch (err) {
-        console.error('Error fetching:', err);
+        console.error('Error fetching data:', err);
       }
     };
 
@@ -43,9 +46,13 @@ export default function Domains() {
   const handleEnrollClick = async (subjectId) => {
     try {
       await api.post('/user-courses/enroll', { subjectId });
+      console.log("Enroll clicked:", subjectId);
       setEnrolledSubjects(prev => ({ ...prev, [subjectId]: "pending" }));
     } catch (err) {
-      console.error("Enrollment error:", err);
+      if (err.response?.data?.message === "Already enrolled") {
+        setEnrolledSubjects(prev => ({ ...prev, [subjectId]: "paid" })); // fallback if already enrolled
+      }
+      console.error("Enrollment error:", err?.response?.data || err);
     }
   };
 
@@ -54,8 +61,12 @@ export default function Domains() {
       await api.post('/user-courses/pay', { subjectId });
       setEnrolledSubjects(prev => ({ ...prev, [subjectId]: "paid" }));
     } catch (err) {
-      console.error("Payment error:", err);
+      console.error("Payment error:", err?.response?.data || err);
     }
+  };
+
+  const handleContinueClick = (subjectId) => {
+    navigate(`/course/${subjectId}`);
   };
 
   return (
@@ -84,6 +95,7 @@ export default function Domains() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
               {(subjectsByDomain[domain._id] || []).map((subject) => {
                 const paymentStatus = enrolledSubjects[subject._id];
+
                 return (
                   <div
                     key={subject._id}
@@ -97,14 +109,19 @@ export default function Domains() {
                     <div className="p-5">
                       <h3 className="text-2xl font-bold text-cyan-300">{subject.name}</h3>
                       <p className="text-sm text-gray-300 mb-2">{subject.description || "No description provided."}</p>
-                      <p className="text-sm text-gray-400 italic mb-2">📁 Domain: {getDomainName(subject.domain)}</p>
+                      <p className="text-sm text-gray-400 italic mb-2">
+                        📁 Domain: {getDomainName(subject.domain)}
+                      </p>
                       <div className="flex justify-between text-sm font-medium">
                         <span className="text-yellow-400">⭐ {subject.reviews || "4.8/5"}</span>
                         <span className="text-green-300">₹{subject.price}</span>
                       </div>
 
                       {paymentStatus === "paid" ? (
-                        <button className="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg">
+                        <button
+                          className="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg"
+                          onClick={() => handleContinueClick(subject._id)}
+                        >
                           Continue Learning
                         </button>
                       ) : paymentStatus === "pending" ? (

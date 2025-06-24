@@ -36,8 +36,20 @@ exports.markPaymentPaid = async (req, res) => {
 
 exports.getUserCourses = async (req, res) => {
   try {
-    const userCourses = await UserCourse.find({ userId: req.user.id }).populate('subject');
-    res.status(200).json(userCourses);
+    const userCourses = await UserCourse.find({ userId: req.user.id })
+      .populate({
+        path: 'subject',
+        select: 'name description price imageUrl reviews domain'
+      });
+
+    const cleanCourses = userCourses
+      .filter(c => c.subject) // filter out deleted subjects
+      .map(course => ({
+        subject: course.subject,
+        paymentStatus: course.paymentStatus
+      }));
+
+    res.status(200).json(cleanCourses);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch user courses', error: err.message });
   }

@@ -26,7 +26,6 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Session configuration for Passport
 app.use(session({
   secret: process.env.SESSION_SECRET || "super-secret-session",
   resave: false,
@@ -43,7 +42,9 @@ app.use("/api/auth", require("./routes/auth"));
 app.use('/api/domains', domainRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/user-courses', userCourseRoutes); 
-app.use("/api/user", authRoutes);          // ✅ email/password login
+app.use("/api/user", authRoutes);
+app.use('/api/payment', require('./routes/paymentRoutes'));
+app.use('/api/payment', require('./routes/payment'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

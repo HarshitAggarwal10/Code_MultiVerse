@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import api from '../utils/api'; // axios instance with credentials
-import SubjectCard from '../components/SubjectCard'; // Assuming you have a SubjectCard component
+import api from '../utils/api';
+import SubjectCard from '../components/SubjectCard';
 
 export default function UserProfile() {
   const [enrolledSubjects, setEnrolledSubjects] = useState([]);
@@ -26,12 +26,21 @@ export default function UserProfile() {
         <p className="text-gray-400">You haven't enrolled in any course yet.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {enrolledSubjects.map((subject) => (
-            <SubjectCard key={subject.subject._id} subject={{
-              ...subject.subject,
-              paymentStatus: subject.paymentStatus,
-            }} />
-          ))}
+          {enrolledSubjects.map((item, index) =>
+            item.subject ? (
+              <SubjectCard
+                key={item.subject._id}
+                subject={{
+                  ...item.subject,
+                  paymentStatus: item.paymentStatus,
+                }}
+              />
+            ) : (
+              <div key={index} className="text-red-500 border border-red-400 p-2 rounded bg-red-100 text-sm">
+                ⚠️ Subject has been deleted or is not available anymore.
+              </div>
+            )
+          )}
         </div>
       )}
     </div>

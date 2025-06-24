@@ -39,9 +39,9 @@ function Layout() {
           <Route path="/courses/:slug" element={<CourseCard />} />
           <Route path="/auth" element={<AuthPage />} />
           {/* <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} /> */}
-          <Route path="/domains" element={<ProtectedRoute><Domains /></ProtectedRoute>} />
-          <Route path="/course/:id" element={<ProtectedRoute><CourseDetails /></ProtectedRoute>} />
-          <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
+          <Route path="/domains" element={<Domains />} />
+          <Route path="/course/:id" element={<CourseDetails />} />
+          <Route path="/my-courses" element={<MyCourses />} />
           <Route path="/profile" element={<UserProfile />} />
         </Routes>
       </div>
