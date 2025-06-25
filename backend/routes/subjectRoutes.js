@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { createSubject, getSubjectsByDomain } = require('../controllers/subjectController');
+const { createSubject, getSubjectsByDomain, getSubjectById } = require('../controllers/subjectController');
 // const auth = require('../middleware/authMiddleware');
 const { protect } = require('../middleware/authMiddleware');
 const Subject = require('../models/Subject');
+const upload  = require('../utils/multer');
 
 router.post('/create', protect , createSubject);
 
@@ -26,6 +27,28 @@ router.patch('/:id', async (req, res) => {
     console.error("Error updating subject:", err);
     res.status(500).json({ message: err.message });
   }
+});
+
+router.get('/:id', getSubjectById);
+
+router.post('/quiz/:subjectId/submit', protect, async (req,res)=>{
+  const { answers=[] } = req.body;
+  const subj = await Subject.findById(req.params.subjectId).select('quiz');
+  const correct = subj.quiz.map((q,i)=> q.answer === answers[i]);
+  res.json({ score: correct.filter(Boolean).length, correct });
+});
+
+router.post('/challenges/:id/submit', protect, async (req,res)=>{
+  // naive evaluation → compare trimmed code
+  const ch = await Subject.findOne({ 'challenges._id': req.params.id },
+                                   { 'challenges.$':1 });
+  const passed = req.body.code.trim().includes('function'); // fake
+  res.json({ passed });
+});
+
+router.post('/assignments/:id/upload', protect, upload.single('file'), (req,res)=>{
+  // Multer `upload` accepts .zip only (file filter)
+  res.json({ status:'received', file:req.file.filename });
 });
 
 module.exports = router;

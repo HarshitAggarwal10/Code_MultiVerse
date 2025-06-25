@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const passport = require("passport");
+const MongoStore = require('connect-mongo');
 
 dotenv.config();
 connectDB(); // connect MongoDB
@@ -26,11 +27,23 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || "super-secret-session",
-  resave: false,
-  saveUninitialized: false
-}));
+app.use(
+  session({
+    name: 'sid',                           // custom cookie name
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,       // reuse your connectDB URI
+      ttl: 7 * 24 * 60 * 60             // 7-day session in DB
+    }),
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000      // 7-day cookie in browser
+    }
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -38,13 +51,12 @@ app.use(passport.session());
 // Routes
 app.use("/auth", authRoutes);                        // ✅ for Google & GitHub OAuth
 app.use("/api/newsletter", require("./routes/newsletter")); // ✅ newsletter
-app.use("/api/auth", require("./routes/auth")); 
+app.use("/api/auth", require("./routes/auth"));
 app.use('/api/domains', domainRoutes);
 app.use('/api/subjects', subjectRoutes);
-app.use('/api/user-courses', userCourseRoutes); 
+app.use('/api/user-courses', userCourseRoutes);
 app.use("/api/user", authRoutes);
-app.use('/api/payment', require('./routes/paymentRoutes'));
-app.use('/api/payment', require('./routes/payment'));
+app.use('/api/quiz', require('./routes/userCourseRoutes')); // ✅ quiz submission
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

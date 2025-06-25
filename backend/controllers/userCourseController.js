@@ -36,21 +36,28 @@ exports.markPaymentPaid = async (req, res) => {
 
 exports.getUserCourses = async (req, res) => {
   try {
-    const userCourses = await UserCourse.find({ userId: req.user.id })
+    const userCourses = await UserCourse
+      .find({
+        userId: req.user.id,
+        // ignore junk rows where "subject" is empty or an invalid ObjectId
+        subject: { $type: 'objectId' }
+      })
       .populate({
         path: 'subject',
         select: 'name description price imageUrl reviews domain'
-      });
+      })
+      .lean();
 
-    const cleanCourses = userCourses
-      .filter(c => c.subject) // filter out deleted subjects
-      .map(course => ({
-        subject: course.subject,
-        paymentStatus: course.paymentStatus
-      }));
-
-    res.status(200).json(cleanCourses);
+    const cleanCourses = userCourses.map(c => ({
+      subject: c.subject,
+      paymentStatus: c.paymentStatus,
+      progress: c.progress ?? 0,
+      completedTopics: c.completedTopics ?? [],
+      quizResult: c.quizResult ?? { score: 0, badge: 'none' }
+    }));
+    return res.json(cleanCourses);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Failed to fetch user courses', error: err.message });
   }
 };
