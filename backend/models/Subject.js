@@ -1,17 +1,9 @@
-// models/Subject.js
 const mongoose = require('mongoose');
-
+const challengeSchema = require('./Challenge');
 const questionSchema = new mongoose.Schema({
   question: String,
   options: [String],
   answer: String            // correct option index / text
-});
-
-const challengeSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  starterCode: String,
-  solution: String
 });
 
 const assignmentSchema = new mongoose.Schema({
@@ -34,18 +26,16 @@ const subjectSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   imageUrl: String,
   reviews: String,
-
-  /* NEW fields ↓ */
   roadmap: [
     {
       title: { type: String, required: true },
       sub: { type: String, required: true }
     }
-  ], 
+  ],
   sources: [String],
   topics: [topicSchema],
   quiz: [questionSchema],
-  challenges: [challengeSchema],
+  challenges: { type: [challengeSchema], default: [] }, 
   assignments: [assignmentSchema]
 });
 

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
-
 const Subject = require('../models/Subject');
 const UserCourse = require('../models/UserCourse');
 const User = require('../models/User');

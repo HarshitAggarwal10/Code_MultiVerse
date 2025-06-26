@@ -39,12 +39,11 @@ exports.getUserCourses = async (req, res) => {
     const userCourses = await UserCourse
       .find({
         userId: req.user.id,
-        // ignore junk rows where "subject" is empty or an invalid ObjectId
         subject: { $type: 'objectId' }
       })
       .populate({
         path: 'subject',
-        select: 'name description price imageUrl reviews domain'
+        select: 'name description price imageUrl reviews domain challenges assignments'
       })
       .lean();
 
@@ -53,7 +52,11 @@ exports.getUserCourses = async (req, res) => {
       paymentStatus: c.paymentStatus,
       progress: c.progress ?? 0,
       completedTopics: c.completedTopics ?? [],
-      quizResult: c.quizResult ?? { score: 0, badge: 'none' }
+      quizResult: c.quizResult ?? { score: 0, badge: 'none' },
+      completedChallenges: c.completedChallenges ?? [],
+      assignmentsCompleted: c.assignmentsCompleted ?? 0,
+      totalChallenges: c.subject?.challenges?.length ?? 0,
+      totalAssignments: c.subject?.assignments?.length ?? 0
     }));
     return res.json(cleanCourses);
   } catch (err) {

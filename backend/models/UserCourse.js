@@ -7,6 +7,11 @@ const userCourseSchema = new mongoose.Schema(
     completedTopics: { type: [Number], default: [] },   // e.g. [0,3,4]
     progress: { type: Number, default: 0 },   // 0-100 cached %
     paymentStatus: { type: String, enum: ['unpaid', 'pending', 'paid'], default: 'unpaid' },
+    certificateStatus: {
+      type: String,
+      enum: ['locked', 'ready', 'issued'], // or whatever stages you want
+      default: 'locked',
+    },
     paymentDate: Date,
     enrolledAt: { type: Date, default: Date.now },
     quizResult: {
@@ -18,6 +23,9 @@ const userCourseSchema = new mongoose.Schema(
       },
       attemptedAt: Date
     },
+    completedChallenges: { type: [mongoose.Schema.Types.ObjectId], default: [] },
+    completedAssignments: { type: [mongoose.Schema.Types.ObjectId], default: [] },
+    certificateUnlocked: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

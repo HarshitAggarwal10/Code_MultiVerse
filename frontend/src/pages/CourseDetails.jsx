@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
+import Celebration from '../components/Celebration';
 
 const cx = (...c) => c.filter(Boolean).join(' ');
 
@@ -28,6 +29,7 @@ export default function CourseDetails() {
   /* quiz state */
   const [quizAns, setQuizAns] = useState({});
   const [quizRes, setQuizRes] = useState(null);
+  const [showCongrats, setShowCongrats] = useState(false);
 
   /* code-challenge */
   const [code, setCode] = useState('// write JS here');
@@ -312,25 +314,19 @@ export default function CourseDetails() {
     );
   };
 
-  /* ---------------------------------------------------------------------- */
-  /*  Quiz section                                                          */
-  /* ---------------------------------------------------------------------- */
   function QuizSection({ subjectId, data = [] }) {
     if (!data.length) return <Empty text="Quiz not ready." />;
 
-    /* ------------- local state ----------------------------------------- */
     const [answers, setAnswers] = React.useState({});     // { 0:'opt', 1:'opt', … }
     const [result, setResult] = React.useState(null);   // { score, correct[], badge }
     const [badge, setBadge] = React.useState(null);   // 'bronze' | 'silver' | 'gold'
 
-    /* ------------- helper maps ----------------------------------------- */
     const medalUI = {
       gold: { label: 'Gold', color: '#FACC15' },   // amber-400
       silver: { label: 'Silver', color: '#A3A3A3' },   // zinc-400
       bronze: { label: 'Bronze', color: '#CD7F32' }    // custom brown
     };
 
-    /* ------------- handlers -------------------------------------------- */
     const pick = (qIdx, val) => setAnswers(prev => ({ ...prev, [qIdx]: val }));
 
     const submit = async () => {
@@ -339,7 +335,7 @@ export default function CourseDetails() {
         const { data: res } = await api.post(
           `/user-courses/${subjectId}/submit`,
           body
-        ); 
+        );
         setResult(res);
         if (res.badge && res.badge !== 'none') setBadge(res.badge);
       } catch (err) {
@@ -350,11 +346,9 @@ export default function CourseDetails() {
     const allAnswered = Object.keys(answers).length === data.length;
     const isDone = !!result;
 
-    /* ------------- ui --------------------------------------------------- */
     return (
       <div className="relative space-y-8">
 
-        {/* ╭──────── celebration overlay ───────╮ */}
         {badge && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
@@ -388,7 +382,6 @@ export default function CourseDetails() {
             </motion.div>
           </motion.div>
         )}
-        {/* ------------- questions list ----------------------------------- */}
         {data.map((q, qi) => {
           const correct = result?.correct[qi];
           return (
@@ -438,7 +431,6 @@ export default function CourseDetails() {
                 })}
               </div>
 
-              {/* verdict per question */}
               {isDone && (
                 <p
                   className={cx(
@@ -453,7 +445,6 @@ export default function CourseDetails() {
           );
         })}
 
-        {/* ------------- footer action ------------------------------------ */}
         {!isDone ? (
           <button
             disabled={!allAnswered}
@@ -482,43 +473,110 @@ export default function CourseDetails() {
     );
   }
 
-  function ChallengeSection({ list = [] }) {
+  function ChallengeSection({ list = [], subjectId, onAllComplete = () => { } }) {
     if (!list.length) return <Empty text="No challenges yet." />;
-    const chall = list[0];
+    const [idx, setIdx] = React.useState(0);
+    const chall = list[idx];
+    const [code, setCode] = React.useState('');
+    const [testsOk, setOk] = React.useState(null);
+    const [output, setOut] = React.useState('');
+    React.useEffect(() => {
+      setCode(chall.starterCode || '');
+      setOk(null);
+      setOut('');
+    }, [idx, chall]);
 
     const run = () => {
-      const win = document.getElementById('liveFrame').contentWindow;
-      win.document.open();
-      win.document.write(`<script>${code}</script>`);
-      win.document.close();
+      setOut(`
+     <style>${chall.starterCss || ''}</style>
+     ${code}
+   `);
+      setOk(null);
     };
 
     const submit = async () => {
-      setTestsOk(null);
-      const { data } = await api.post(`/challenges/${chall._id}/submit`, { code });
-      setTestsOk(data.passed);
+      if (!chall?._id) return alert('Challenge id missing.');
+      setOk(null);
+      try {
+        const { data } = await api.post(`/challenges/${chall._id}/submit`, {
+          code,
+          css: chall.starterCss || '',
+          subjectId
+        });
+
+        if (data.passed) {
+          setOk(true);
+          alert("🎉 All tests passed!");
+          if (Number(data.totalDone) >= list.length) {
+            onAllComplete();
+          }
+        } else {
+          setOk(false);
+          alert("❌ Some tests failed:\n" + data.hints.join('\n'));
+        }
+
+      } catch (e) {
+        console.error(e);
+        setOk(false);
+        alert("An error occurred while submitting the challenge.");
+      }
     };
 
+    const editorOnChange = (val) => setCode(val ?? '');
     return (
-      <div className="space-y-4">
-        <h4 className="font-bold text-indigo-800">{chall.title}</h4>
-        <p>{chall.description}</p>
-
-        <Editor height="280px" language="javascript" theme="vs-dark"
-          value={code} onChange={v => setCode(v || '')} />
-
-        <div className="flex gap-3">
-          <button onClick={run} className="bg-gray-600 text-white px-4 py-1 rounded">▶ Run</button>
-          <button onClick={submit} className="bg-indigo-700 text-white px-4 py-1 rounded">Submit</button>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h4 className="font-bold text-indigo-800">
+            Challenge&nbsp;{idx + 1} / {list.length}&nbsp;—&nbsp;{chall.title}
+          </h4>
+          <div className="hidden sm:flex gap-2">
+            <button
+              onClick={() => (idx > 0) && setIdx(i => i - 1)}
+              className="px-3 py-1 rounded text-sm bg-slate-200 disabled:opacity-40"
+              disabled={idx === 0}>
+              ◀ Prev
+            </button>
+            <button
+              onClick={() => (idx < list.length - 1) && setIdx(i => i + 1)}
+              className="px-3 py-1 rounded text-sm bg-slate-200 disabled:opacity-40"
+              disabled={idx === list.length - 1}>
+              Next ▶
+            </button>
+          </div>
         </div>
-
-        {testsOk != null && (
-          <p className={testsOk ? 'text-green-600' : 'text-red-600'}>
-            {testsOk ? '🎉 Tests passed!' : '❌ Tests failed'}
+        <p className="text-slate-700">{chall.description}</p>
+        <Editor
+          key={chall._id}                 // ← this fixes the cursor bug
+          height="300px"
+          defaultLanguage="html"
+          theme="vs-dark"
+          value={code}
+          onChange={val => setCode(val || '')}
+          options={{ fontSize: 14, minimap: { enabled: false } }}
+        />
+        <div className="flex gap-4">
+          <button
+            onClick={run}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-1.5 rounded">
+            ▶ Run
+          </button>
+          <button
+            onClick={submit}
+            className="bg-indigo-700 hover:bg-indigo-800 text-white px-5 py-1.5 rounded">
+            Submit
+          </button>
+        </div>
+        {testsOk !== null && (
+          <p className={testsOk ? 'text-emerald-600' : 'text-red-600 font-medium'}>
+            {testsOk ? '🎉 All tests passed!' : '❌ Some tests failed'}
           </p>
         )}
-
-        <iframe id="liveFrame" title="live" className="w-full h-40 border mt-4" />
+        <iframe
+          title="preview"
+          className="w-full h-60 border rounded bg-white"
+          sandbox=""
+          srcDoc={output}
+        />
       </div>
     );
   }
@@ -562,7 +620,17 @@ export default function CourseDetails() {
     },
     { name: 'Sources', comp: <Sources items={course.sources} /> },
     { name: 'Quiz', comp: <QuizSection data={course.quiz} subjectId={course._id} /> },
-    { name: 'Challenges', comp: <ChallengeSection list={course.challenges} /> },
+    {
+      name: 'Challenges',
+      comp: (
+        <ChallengeSection
+          list={course.challenges}
+          subjectId={course._id}
+          onAllComplete={() => setShowCongrats(true)}
+          totalChallenges={course.challenges.length}
+        />
+      )
+    },
     { name: 'Assignments', comp: <AssignmentSection list={course.assignments} /> }
   ];
 
@@ -579,7 +647,7 @@ export default function CourseDetails() {
 
         <div className="flex-1 flex flex-col justify-center">
           <h1 className="text-4xl lg:text-5xl font-extrabold text-indigo-800 mb-5">{course.name}</h1>
-          <p className="text-lg lg:text-xl text-slate-600 leading-relaxed mb-6">{course.description}</p>
+          <p className="text-md lg:text-md text-slate-600 leading-relaxed mb-6">{course.description}</p>
 
           <div className="flex items-center gap-6 mb-6">
             <p className="text-2xl font-bold text-emerald-600">₹{course.price}</p>
@@ -652,6 +720,7 @@ export default function CourseDetails() {
           ))}
         </Tab.Panels>
       </Tab.Group>
+      {showCongrats && <Celebration onDone={() => setShowCongrats(false)} />}
     </div>
   );
 }

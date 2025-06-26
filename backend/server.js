@@ -57,6 +57,12 @@ app.use('/api/subjects', subjectRoutes);
 app.use('/api/user-courses', userCourseRoutes);
 app.use("/api/user", authRoutes);
 app.use('/api/quiz', require('./routes/userCourseRoutes')); // ✅ quiz submission
+app.use('/api/challenges', require('./routes/challengeRoutes'));
+
+(app._router?.stack || [])
+  .filter(r => r.route)
+  .forEach(r => console.log(`[ROUTE] ${r.route.stack[0].method.toUpperCase()} ${r.route.path}`));
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

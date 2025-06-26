@@ -51,4 +51,19 @@ router.post('/assignments/:id/upload', protect, upload.single('file'), (req,res)
   res.json({ status:'received', file:req.file.filename });
 });
 
+router.patch('/:id', protect, async (req, res) => {
+  try {
+    const updated = await Subject.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating subject', error: err.message });
+  }
+});
+
+
 module.exports = router;
