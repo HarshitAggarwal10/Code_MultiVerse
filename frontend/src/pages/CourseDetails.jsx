@@ -8,6 +8,7 @@ import rehypeHighlight from 'rehype-highlight';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
 import Celebration from '../components/Celebration';
+import { useNavigate } from 'react-router-dom';
 
 const cx = (...c) => c.filter(Boolean).join(' ');
 
@@ -25,6 +26,8 @@ export default function CourseDetails() {
   const { user: currentUser } = useContext(AuthContext);
   const [course, setCourse] = useState(null);
   const [err, setErr] = useState(null);
+  const [userCourse, setUserCourse] = useState(null);
+  const navigate = useNavigate();
 
   /* quiz state */
   const [quizAns, setQuizAns] = useState({});
@@ -38,6 +41,17 @@ export default function CourseDetails() {
   /* assignment upload */
   const [zip, setZip] = useState(null);
   const [progress, setProgress] = useState(0);
+
+  const refetchUserCourse = async () => {
+    try {
+      const { data } = await api.get('/user-courses/my-courses');
+      const entry = data.find(e => (e.subject?._id || e.subject) === id);
+      setUserCourse(entry);          // if you want to store it
+      // you can also refresh progress / certificate banners here
+    } catch (err) {
+      console.error('Could not refresh user-course', err);
+    }
+  };
 
   useEffect(() => {
     setErr(null); setCourse(null);
@@ -506,7 +520,7 @@ export default function CourseDetails() {
 
         if (data.passed) {
           setOk(true);
-          alert("🎉 All tests passed!");
+          alert("All tests passed!");
           if (Number(data.totalDone) >= list.length) {
             onAllComplete();
           }
@@ -581,28 +595,93 @@ export default function CourseDetails() {
     );
   }
 
-  function AssignmentSection({ list = [] }) {
+  function AssignmentSection({ list = [], subjectId, onDone = () => { } }) {
     if (!list.length) return <Empty text="No assignments yet." />;
-    const a = list[0];
+
+    const [idx, setIdx] = useState(0);
+    const [zip, setZip] = useState(null);
+    const [status, setStatus] = useState(null);      // 'ok' | 'err'
+    const [message, setMessage] = useState('');
+
+    const assn = list[idx];
 
     const upload = async () => {
-      if (!zip) return alert('Choose a .zip');
-      const fd = new FormData(); fd.append('file', zip);
-      await api.post(`/assignments/${a._id}/upload`, fd);
-      setZip(null); alert('Uploaded!');
+      if (!zip) return alert('Choose a .zip first');
+
+      const requiredName =
+        assn.expectedZipName ||
+        `${assn.title.trim().toLowerCase().replace(/\s+/g, '-')}.zip`;
+
+      if (zip.name.toLowerCase() !== requiredName.toLowerCase()) {
+        setStatus('err');
+        setMessage(`Zip must be named exactly "${requiredName}"`);
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append('file', zip);
+
+      try {
+        const { data } = await api.post(`/assignments/${assn._id}/upload`, fd);
+
+        setStatus('ok');
+        setMessage(data.message);
+
+        if (data.certificateReady) {
+          onDone();                                   // refresh / show confetti
+          alert('🎉 All assignments & challenges complete – certificate unlocked!');
+          navigate(`/profile`);
+        } else if (idx < list.length - 1) {
+          // advance to next
+          setIdx(i => i + 1);
+          setZip(null);
+          setStatus(null);
+          setMessage('');
+          alert('Nice! Next assignment unlocked.');
+        }
+      } catch (err) {
+        setStatus('err');
+        console.error('Upload failed', err);
+        setMessage(err.response?.data?.error || 'Upload failed');
+      }
     };
 
     return (
-      <div className="space-y-4">
-        <h4 className="font-bold text-indigo-800">{a.title}</h4>
-        <p>{a.description}</p>
-        <p className="text-sm text-gray-500">Due: {new Date(a.dueDate).toLocaleDateString()}</p>
+      <div className="space-y-5">
+        <header className="flex items-center justify-between">
+          <h4 className="font-bold text-indigo-800">
+            Assignment {idx + 1} / {list.length} — {assn.title}
+          </h4>
+          <p className="text-sm text-slate-500">
+            Due&nbsp;{new Date(assn.dueDate).toLocaleDateString()}
+          </p>
+        </header>
 
-        <input type="file" accept=".zip" onChange={e => setZip(e.target.files[0])} />
-        <button onClick={upload} disabled={!zip}
-          className="bg-indigo-700 text-white px-4 py-1 rounded disabled:opacity-40">
+        <p>{assn.description}</p>
+
+        <input
+          type="file"
+          accept=".zip"
+          onChange={e => {
+            setZip(e.target.files[0]);
+            setStatus(null);
+            setMessage('');
+          }}
+        />
+
+        <button
+          onClick={upload}
+          disabled={!zip}
+          className="bg-indigo-700 hover:bg-indigo-800 text-white px-5 py-1.5 rounded disabled:opacity-40"
+        >
           Upload ZIP
         </button>
+
+        {status && (
+          <p className={status === 'ok' ? 'text-emerald-600' : 'text-red-600'}>
+            {message}
+          </p>
+        )}
       </div>
     );
   }
@@ -631,7 +710,16 @@ export default function CourseDetails() {
         />
       )
     },
-    { name: 'Assignments', comp: <AssignmentSection list={course.assignments} /> }
+    {
+      name: 'Assignments',
+      comp: (
+        <AssignmentSection
+          list={course.assignments}
+          subjectId={course._id}
+          onDone={refetchUserCourse}     // ← no arrow needed
+        />
+      )
+    }
   ];
 
   /* ------------------------------ render ---------------------------------- */

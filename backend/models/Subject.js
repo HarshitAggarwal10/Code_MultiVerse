@@ -9,7 +9,9 @@ const questionSchema = new mongoose.Schema({
 const assignmentSchema = new mongoose.Schema({
   title: String,
   description: String,
-  dueDate: Date
+  dueDate: Date,
+  expectedZipName: String,     // e.g. "flexbox-gallery.zip"
+  expectedFiles: [String]      // e.g. ["index.html","style.css","README.md"]
 });
 
 const topicSchema = new mongoose.Schema({
@@ -35,7 +37,7 @@ const subjectSchema = new mongoose.Schema({
   sources: [String],
   topics: [topicSchema],
   quiz: [questionSchema],
-  challenges: { type: [challengeSchema], default: [] }, 
+  challenges: { type: [challengeSchema], default: [] },
   assignments: [assignmentSchema]
 });
 

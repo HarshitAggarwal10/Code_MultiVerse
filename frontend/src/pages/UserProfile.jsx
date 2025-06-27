@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { FaMedal } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { differenceInCalendarDays, eachDayOfInterval, formatISO } from 'date-fns';
+import Celebration from '../components/Celebration';
 
 export default function UserProfile() {
   const { user } = useContext(AuthContext);
@@ -17,6 +18,8 @@ export default function UserProfile() {
   const [alert, setAlert] = useState(null);
   const [streakDays, setStreakDays] = useState(0);     // e.g. 5
   const [nextBadge, setNextBadge] = useState('N/A');
+  const [showCertConfetti, setShowCertConfetti] = useState(false);
+  const [seenReadyIds, setSeenReadyIds] = useState(new Set());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,29 +61,36 @@ export default function UserProfile() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const readyNow = courses.filter(c => c.certificateStatus === 'ready');
+    const fresh = readyNow.find(c => !seenReadyIds.has(c.subject._id));
+    if (fresh) {
+      setShowCertConfetti(true);
+      setSeenReadyIds(prev => new Set(prev).add(fresh.subject._id));
+    }
+  }, [courses, seenReadyIds]);
+
   const initials = user?.name?.split(' ').map((n) => n[0]).join('').toUpperCase() || 'U';
   const inProgress = courses.filter(c => (c.progress ?? 0) < 100);
   const completed = courses.filter(c => (c.progress ?? 0) >= 100);
 
-  const certificates = completed.filter(c => c.challengesCompleted && c.assignmentsCompleted
-  );
+  const certificates = completed.filter(c => c.certificateStatus === 'ready');
   const recommended = inProgress.find((c) => (c.progress || 0) > 0) || inProgress[0];
   const badges = courses
     .filter(c => c.quizResult?.badge && c.quizResult.badge !== 'none')
     .map(c => ({
       course: c.subject?.name,
       score: c.quizResult.score,
-      medal: c.quizResult.badge          // gold | silver | bronze
+      medal: c.quizResult.badge
     }));
 
-  /* ───────────────────────────────────────────────────────────────
-   Show yellow banner only when: every challenge is done but
-    at least one assignment is still pending for that course.
-  ──────────────────────────────────────────────────────────────── */
-  const bannerCourse = courses.find(c =>
+  const pendingCourse = courses.find(c =>
     (c.completedChallenges?.length || 0) >= (c.totalChallenges || 0) &&
-    (c.assignmentsCompleted || 0) < (c.totalAssignments || 0)
+    (c.assignmentsCompleted) < (c.totalAssignments || 0) &&
+    c.certificateStatus !== 'ready'
   );
+
+  const readyCourse = courses.find(c => c.certificateStatus === 'ready');
 
   const medalColor = {
     gold: '#FACC15',   // amber-400
@@ -173,25 +183,45 @@ export default function UserProfile() {
           />)}
       </Section>
 
-      {bannerCourse && (
+      {pendingCourse && (
+        <motion.div {...motionProps}>
+          <span className="text-3xl">🎯</span>
+          <p className="flex-1 text-sm sm:text-base text-amber-900">
+            You’ve aced <b>all challenges</b> in
+            <b className="mx-1">{pendingCourse.subject?.name}</b>.
+            Submit the assignment(s) to unlock your certificate!
+          </p>
+          <button onClick={() =>
+            navigate(`/course/${pendingCourse.subject?._id}#assignments`)}
+            className="shrink-0 bg-amber-600 hover:bg-amber-700 …">
+            Go&nbsp;to&nbsp;assignments
+          </button>
+        </motion.div>
+      )}
+
+      {/* ── green ‘certificate ready’ banner ────────────────────────────── */}
+      {readyCourse && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mt-10 max-w-4xl mx-auto flex items-center gap-4
-               bg-amber-50 border border-amber-300/80 rounded-xl p-5 shadow"
+               bg-emerald-50 border border-emerald-300/80 rounded-xl p-5 shadow"
         >
           <span className="text-3xl">🎉</span>
-          <p className="flex-1 text-sm sm:text-base text-amber-900">
-            You’ve smashed <b>all challenges</b> in
-            <b className="mx-1">{bannerCourse.subject?.name}</b>.
-            Submit the assignment(s) to unlock your certificate!
+          <p className="flex-1 text-sm sm:text-base text-emerald-900">
+            Congratulations! You’ve completed <b>all challenges &amp; assignments</b> in
+            <b className="mx-1">{readyCourse.subject?.name}</b>.
+            Your certificate is now ready to download.
           </p>
           <button
-            onClick={() => navigate(`/course/${bannerCourse.subject?._id}#assignments`)}
-            className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white
+            onClick={() => window.open(
+              `/certificate/download/${readyCourse.subject?._id}`,
+              '_blank'
+            )}
+            className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white
                  px-4 py-2 rounded-md text-sm font-semibold"
           >
-            Go&nbsp;to&nbsp;assignments
+            Download&nbsp;Certificate
           </button>
         </motion.div>
       )}
@@ -291,14 +321,8 @@ export default function UserProfile() {
 
       {/* Support card */}
       <section className="max-w-6xl mx-auto mt-20">
-        <div className="
-      relative overflow-hidden
-      rounded-3xl shadow-xl
-      p-8 sm:p-12
-      flex flex-col sm:flex-row items-center justify-between gap-6
-      text-white
-      bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800
-  ">
+        <div className="relative overflow-hidden rounded-3xl shadow-xl p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 text-white
+      bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800">
           {/* decorative burst */}
           <span className="absolute -top-16 -left-20 w-72 h-72 bg-indigo-500/30 rounded-full blur-3xl" />
 
@@ -329,6 +353,9 @@ export default function UserProfile() {
         </div>
       </section>
       <LockAlert data={alert} onClose={() => setAlert(null)} />
+      {showCertConfetti && (
+        <Celebration onDone={() => setShowCertConfetti(false)} />
+      )}
     </div>
   );
 }
@@ -355,13 +382,9 @@ const CourseGrid = ({ data, accent, completed = false, openAlert }) => (
   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
     {data.map((c) => {                        /*  ← curly brace added       */
       /* ────────── per-course derived state ────────── */
-      const doneChallenges =
-        (c.completedChallenges?.length || 0) >= (c.totalChallenges || 0);
-      const doneAssignments =
-        (c.assignmentsCompleted || 0) >= (c.totalAssignments || 0);
-      const canDownload = doneChallenges && doneAssignments;
+      const canDownload = c.certificateStatus === 'ready';
 
-      return (                                   /*  ← return added          */
+      return (
         <motion.div
           key={c._id}
           initial={{ opacity: 0, y: 25 }}

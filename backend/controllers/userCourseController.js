@@ -56,7 +56,8 @@ exports.getUserCourses = async (req, res) => {
       completedChallenges: c.completedChallenges ?? [],
       assignmentsCompleted: c.assignmentsCompleted ?? 0,
       totalChallenges: c.subject?.challenges?.length ?? 0,
-      totalAssignments: c.subject?.assignments?.length ?? 0
+      totalAssignments: c.subject?.assignments?.length ?? 0,
+      certificateStatus:  c.certificateStatus,
     }));
     return res.json(cleanCourses);
   } catch (err) {
