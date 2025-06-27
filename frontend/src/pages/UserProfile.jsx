@@ -1,15 +1,12 @@
 import { useEffect, useState, useContext } from 'react';
 import api from '../utils/api';
-import {
-  CircularProgressbarWithChildren,
-  buildStyles,
-} from 'react-circular-progressbar';
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { AuthContext } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { FaMedal } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { differenceInCalendarDays, eachDayOfInterval, formatISO } from 'date-fns';
+import { formatISO } from 'date-fns';
 import Celebration from '../components/Celebration';
 
 export default function UserProfile() {
@@ -184,8 +181,11 @@ export default function UserProfile() {
       </Section>
 
       {pendingCourse && (
-        <motion.div {...motionProps}>
-          <span className="text-3xl">🎯</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-10 max-w-4xl mx-auto flex …"
+        >          <span className="text-3xl">🎯</span>
           <p className="flex-1 text-sm sm:text-base text-amber-900">
             You’ve aced <b>all challenges</b> in
             <b className="mx-1">{pendingCourse.subject?.name}</b>.
@@ -214,13 +214,10 @@ export default function UserProfile() {
             Your certificate is now ready to download.
           </p>
           <button
-            onClick={() => window.open(
-              `/certificate/download/${readyCourse.subject?._id}`,
-              '_blank'
+            onClick={() => navigate(
+              `/certificate/${readyCourse.subject._id}`         // opens a new tab and avoids SPA routing clash
             )}
-            className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white
-                 px-4 py-2 rounded-md text-sm font-semibold"
-          >
+            className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-sm font-semibold">
             Download&nbsp;Certificate
           </button>
         </motion.div>
@@ -229,8 +226,8 @@ export default function UserProfile() {
       {badges.length > 0 && (
         <Section title="Badges">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {badges.map(b => (
-              <motion.div key={`${b.course}-${b.medal}`}
+            {badges.map((b, idx) => (
+              <motion.div key={`${b.course}-${b.medal}-${idx}`}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: .4 }}
@@ -378,72 +375,84 @@ const Empty = ({ text }) => (
   <p className="text-gray-500 font-medium">{text}</p>
 );
 
-const CourseGrid = ({ data, accent, completed = false, openAlert }) => (
-  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {data.map((c) => {                        /*  ← curly brace added       */
-      /* ────────── per-course derived state ────────── */
-      const canDownload = c.certificateStatus === 'ready';
+const CourseGrid = ({ data, accent, completed = false, openAlert }) => {
+  const navigate = useNavigate();                     // ✔ we need the hook *here*
 
-      return (
-        <motion.div
-          key={c._id}
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: .4 }}
-          className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm"
-        >
-          <h4 className={`font-semibold ${completed ? 'text-green-600' : 'text-[#1e40af]'
-            } mb-1`}>
-            {c.subject?.name}
-          </h4>
+  return (
+    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {data.map((c) => {
+        const canDownload = c.certificateStatus === 'ready';
 
-          <p className="text-sm text-gray-600 mb-5">
-            {c.subject?.description || 'No description'}
-          </p>
+        return (
+          <motion.div
+            key={c._id}
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm"
+          >
+            {/* --- title & description --------------------------------- */}
+            <h4
+              className={`font-semibold ${completed ? 'text-green-600' : 'text-[#1e40af]'
+                } mb-1`}
+            >
+              {c.subject?.name}
+            </h4>
 
-          {/* progress ring */}
-          <ProgressRing
-            value={completed ? 100 : (c.progress ?? 0)}
-            accent={
-              completed ? '#16a34a'
-                : c.quiz?.badge === 'gold' ? '#d97706'
-                  : c.quiz?.badge === 'silver' ? '#6b7280'
-                    : c.quiz?.badge === 'bronze' ? '#b45309'
-                      : accent
-            }
-            completed={completed}
-          />
+            <p className="text-sm text-gray-600 mb-5">
+              {c.subject?.description || 'No description'}
+            </p>
 
-          {/* certificate button */}
-          {completed && (
-            <button
-              onClick={() => {
-                if (canDownload) {
-                  window.open(`/certificate/download/${c.subject._id}`, '_blank');
-                } else {
-                  openAlert?.({ course: c.subject?.name });
-                }
-              }}
-              className={`mt-5 w-full py-2 text-sm font-semibold rounded
-                ${canDownload
+            {/* --- progress ring -------------------------------------- */}
+            <ProgressRing
+              value={completed ? 100 : c.progress ?? 0}
+              accent={
+                completed
+                  ? '#16a34a'
+                  : c.quiz?.badge === 'gold'
+                    ? '#d97706'
+                    : c.quiz?.badge === 'silver'
+                      ? '#6b7280'
+                      : c.quiz?.badge === 'bronze'
+                        ? '#b45309'
+                        : accent
+              }
+              completed={completed}
+            />
+
+            {/* --- Certificate / locked button ------------------------ */}
+            {completed && (
+              <button
+                onClick={() => {
+                  if (canDownload) {
+                    // open certificate IN THE SAME TAB
+                    navigate(`/certificate/${c.subject._id}`);
+                  } else {
+                    // show “finish course first” modal
+                    openAlert?.({ course: c.subject?.name });
+                  }
+                }}
+                className={`mt-5 w-full py-2 text-sm font-semibold rounded ${canDownload
                   ? 'bg-[#1e40af] hover:bg-[#1e3a8a] text-white'
                   : 'bg-gray-200 text-gray-500 hover:bg-gray-200 ring-1 ring-inset ring-gray-300'
-                }`}
-            >
-              Download Certificate
-            </button>
-          )}
-        </motion.div>
-      );
-    })}
-  </div>
-);
+                  }`}
+              >
+                Download&nbsp;Certificate
+              </button>
+            )}
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
 
 const ProgressRing = ({ value, accent, completed }) => {
   const [display, setDisplay] = useState(0);
+
   useEffect(() => {
-    const timer = setTimeout(() => setDisplay(value), 200); // start fill after mount
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setDisplay(value), 150);
+    return () => clearTimeout(t);
   }, [value]);
 
   return (
@@ -452,13 +461,11 @@ const ProgressRing = ({ value, accent, completed }) => {
       styles={buildStyles({
         pathTransitionDuration: 0.8,
         pathColor: accent,
-        textColor: completed ? accent : '#1e293b',
         trailColor: '#e5e7eb',
+        textColor: completed ? accent : '#1e293b',
       })}
     >
-      <div className="text-sm font-semibold">
-        {display.toFixed(0)}%
-      </div>
+      <div className="text-sm font-semibold">{display.toFixed(0)}%</div>
     </CircularProgressbarWithChildren>
   );
 };

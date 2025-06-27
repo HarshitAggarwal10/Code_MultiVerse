@@ -18,10 +18,11 @@ import CourseDetails from './pages/CourseDetails';
 import MyCourses from './pages/MyCourses';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserProfile from "./pages/UserProfile";
+import CertificatePage from "./components/CertificatePage";
 
 function Layout() {
   const location = useLocation();
-  const hideLayout = location.pathname === "/auth";
+  const hideLayout = location.pathname === "/auth" || location.pathname.startsWith('/certificate');;
 
   return (
     <>
@@ -43,6 +44,7 @@ function Layout() {
           <Route path="/course/:id" element={<CourseDetails />} />
           <Route path="/my-courses" element={<MyCourses />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/certificate/:subjectId" element={<CertificatePage />} />
         </Routes>
       </div>
       {!hideLayout && <Footer />}
