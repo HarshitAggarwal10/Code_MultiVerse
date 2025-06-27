@@ -329,17 +329,9 @@ export default function UserProfile() {
               Our mentors reply within&nbsp;<strong>&lt; 3&nbsp;h</strong>.
             </p>
           </div>
-
           <a
-            href="mailto:support@codemultiverse.com"
-            className="
-        relative z-10
-        inline-flex items-center gap-2
-        bg-white text-indigo-700 font-semibold
-        px-5 py-2.5 rounded-full
-        shadow-md hover:shadow-lg
-        transition
-      "
+            href="mailto:mastercodemultiverse@gmail.com?subject=Need%20Help%20with%20Code%20MultiVerse&body=Hi%20Support%20Team%2C%0A%0AI%20need%20assistance%20with%20the%20following%20issue%3A%0A%5BPlease%20describe%20your%20problem%20here%5D%0A%0AThanks%2C%0A%5BYour%20Name%5D"
+            className="relative z-10 inline-flex items-center gap-2 bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M2 4h20v16H2z" opacity=".1" />
