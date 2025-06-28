@@ -1,3 +1,7 @@
+//rzp_test_DHyKCkAB21NWFU   key id
+
+//EWtTWFoI3ZMzd3W86UellENW  key scret
+
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;

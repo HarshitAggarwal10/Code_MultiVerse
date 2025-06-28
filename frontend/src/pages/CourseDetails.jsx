@@ -112,6 +112,7 @@ export default function CourseDetails() {
     const KEY = `progress:${subjectId}`;
     const [done, setDone] = React.useState([]);   // indices list
     const [loading, setLo] = React.useState(true);
+
     React.useEffect(() => {
       (async () => {
         try {
@@ -120,13 +121,25 @@ export default function CourseDetails() {
             (e) => (e.subject?._id || e.subject) === subjectId
           );
           const serverDone = entry?.completedTopics ?? [];
+
+          // ✅ Trust only server for new users — reset local
+          if (serverDone.length === 0) {
+            localStorage.setItem(KEY, JSON.stringify([]));
+            setDone([]);
+            onProgressChange(0);
+            return;
+          }
+
+          // Merge server + local if user already made progress
           const localDone = JSON.parse(localStorage.getItem(KEY) || '[]');
           const merged = Array.from(new Set([...serverDone, ...localDone]));
           setDone(merged);
+
           const unsynced = localDone.filter((i) => !serverDone.includes(i));
           for (const idx of unsynced) {
             await api.post(`/user-courses/progress/${subjectId}`, { topic: idx });
           }
+
           const pct = Math.round((merged.length / topics.length) * 100);
           onProgressChange(pct);
           localStorage.setItem(KEY, JSON.stringify(merged));
@@ -137,6 +150,7 @@ export default function CourseDetails() {
         }
       })();
     }, [subjectId, topics.length, onProgressChange]);
+
     const markComplete = async (idx) => {
       if (done.includes(idx)) return;          // already counted
       const updated = [...done, idx];

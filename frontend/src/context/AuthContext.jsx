@@ -30,10 +30,12 @@ const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+  const login = (payload /* { token, user } */) => {
+    setUser(payload.user);
+    localStorage.setItem('user', JSON.stringify(payload.user));
+    localStorage.setItem('token', payload.token);   // save real token
   };
+
 
   const logout = async () => {
     await axios.get("http://localhost:5000/auth/logout", {

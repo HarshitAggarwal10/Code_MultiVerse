@@ -14,7 +14,9 @@ export default function AuthPage() {
     const { login } = useContext(AuthContext);
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const endpoint = isLogin ? "http://localhost:5000/api/auth/login" : "http://localhost:5000/api/auth/signup";
+        const endpoint = isLogin
+            ? "http://localhost:5000/api/auth/login"
+            : "http://localhost:5000/api/auth/signup";
 
         const body = isLogin ? { email, password } : { name, email, password };
 
@@ -28,9 +30,17 @@ export default function AuthPage() {
 
             const data = await res.json();
             if (res.ok) {
-                alert("Auth successful");
-                login(data.user);
-                navigate(isLogin ? "/domains" : "/auth");
+                if (isLogin) {
+                    alert("Login successful");
+                    login(data);
+                    navigate("/domains");
+                } else {
+                    alert("Signup successful. Please log in.");
+                    setIsLogin(true);        // ✅ Switch to login form
+                    setEmail("");            // ✅ Clear form fields (optional)
+                    setPassword("");
+                    setName("");
+                }
             } else {
                 alert(data.message || "Auth failed");
             }
@@ -39,6 +49,7 @@ export default function AuthPage() {
             alert("Error connecting to server");
         }
     };
+
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0e2a] via-[#0d1b3e] to-[#0a0e2a] overflow-hidden">
             <button

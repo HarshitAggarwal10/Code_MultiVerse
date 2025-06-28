@@ -23,7 +23,7 @@ const topicSchema = new mongoose.Schema({
 
 const subjectSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  domain: { type: mongoose.Schema.Types.ObjectId, ref: 'Domain' },
+  domain: { type: mongoose.Schema.Types.ObjectId, ref: 'Domain', required: true },
   description: String,
   price: { type: Number, required: true },
   imageUrl: String,

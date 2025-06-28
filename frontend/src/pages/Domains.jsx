@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import Tech3DScene from "../components/Model";
+import loadRazorpay from '../utils/loadRazorpay';
 
 export default function Domains() {
   const [domains, setDomains] = useState([]);
   const [subjectsByDomain, setSubjectsByDomain] = useState({});
   const [enrolledSubjects, setEnrolledSubjects] = useState({});
   const navigate = useNavigate();
+  const RZP_KEY = 'rzp_test_DHyKCkAB21NWFU';
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -56,12 +58,51 @@ export default function Domains() {
     }
   };
 
-  const handlePaymentClick = async (subjectId) => {
+  const handlePaymentClick = async (subject) => {
+    const subjectId = subject._id;
+    const amount = subject.price;                  // ₹
+
+    // ① ensure script is present
+    const ok = await loadRazorpay();
+    if (!ok) {
+      alert('Failed to load Razorpay – please check your connection');
+      return;
+    }
+
     try {
-      await api.post('/user-courses/pay', { subjectId });
-      setEnrolledSubjects(prev => ({ ...prev, [subjectId]: "paid" }));
+      // ② create Razorpay order on the server
+      const { data: order } = await api.post(
+        '/user-courses/create-order',
+        { amount }                       // server multiplies by 100
+      );
+
+      // ③ open Razorpay checkout
+      const rzp = new window.Razorpay({
+        key: RZP_KEY,
+        name: 'Code MultiVerse',
+        description: 'Course Purchase',
+        order_id: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        theme: { color: '#6366f1' },
+        handler: async (resp) => {
+          /* ④ tell backend the payment succeeded */
+          await api.post('/user-courses/pay', {
+            subjectId,
+            razorpayPaymentId: resp.razorpay_payment_id,
+            razorpayOrderId: resp.razorpay_order_id,
+            razorpaySignature: resp.razorpay_signature
+          });
+
+          alert('✅ Payment successful!');
+          setEnrolledSubjects(prev => ({ ...prev, [subjectId]: 'paid' }));
+        }
+      });
+
+      rzp.open();
     } catch (err) {
-      console.error("Payment error:", err?.response?.data || err);
+      console.error(err);
+      alert('❌ Payment failed. Try again.');
     }
   };
 
@@ -127,7 +168,7 @@ export default function Domains() {
                       ) : paymentStatus === "pending" ? (
                         <button
                           className="mt-4 w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-lg"
-                          onClick={() => handlePaymentClick(subject._id)}
+                          onClick={() => handlePaymentClick(subject)}
                         >
                           Complete Payment
                         </button>

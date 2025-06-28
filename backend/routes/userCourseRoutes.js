@@ -7,40 +7,45 @@ const User = require('../models/User');
 const {
   enrollInSubject,
   markPaymentPaid,
-  getUserCourses
+  getUserCourses,
+  updateTopicProgress
 } = require('../controllers/userCourseController');
+const { createOrder, confirmPayment } = require('../controllers/paymentController');
 const mongoose = require('mongoose');
 
 router.post('/enroll', protect, enrollInSubject);
 router.post('/pay', protect, markPaymentPaid);
 router.get('/my-courses', protect, getUserCourses);
+router.post('/progress/:subjectId', protect, updateTopicProgress);
+router.post('/create-order', protect, createOrder);
+router.post('/confirm', protect, confirmPayment);
 
-router.post('/progress/:subjectId', protect, async (req, res) => {
-  try {
-    const { subjectId } = req.params;          // course._id
-    const { topic } = req.body;            // numeric index
-    const userId = req.user.id;
+// router.post('/progress/:subjectId', protect, async (req, res) => {
+//   try {
+//     const { subjectId } = req.params;          // course._id
+//     const { topic } = req.body;            // numeric index
+//     const userId = req.user.id;
 
-    /* upsert course entry & push topic into a set                          */
-    const course = await UserCourse.findOneAndUpdate(
-      { userId, subject: subjectId },
-      { $addToSet: { completedTopics: topic } },
-      { new: true, upsert: true }
-    );
+//     /* upsert course entry & push topic into a set                          */
+//     const course = await UserCourse.findOneAndUpdate(
+//       { userId, subject: subjectId },
+//       { $addToSet: { completedTopics: topic } },
+//       { new: true, upsert: true }
+//     );
 
-    /* recompute % (topics length lives on the Subject doc)                 */
-    const { topics } = await Subject.findById(subjectId).select('topics');
-    course.progress = Math.round(
-      (course.completedTopics.length / topics.length) * 100
-    );
-    await course.save();
+//     /* recompute % (topics length lives on the Subject doc)                 */
+//     const { topics } = await Subject.findById(subjectId).select('topics');
+//     course.progress = Math.round(
+//       (course.completedTopics.length / topics.length) * 100
+//     );
+//     await course.save();
 
-    res.json({ progress: course.progress, completedTopics: course.completedTopics });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Could not update progress', error: err.message });
-  }
-});
+//     res.json({ progress: course.progress, completedTopics: course.completedTopics });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Could not update progress', error: err.message });
+//   }
+// });
 
 router.post('/:id/submit', protect, async (req, res) => {
   const { id } = req.params;            // subject id

@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import api from '../utils/api';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -8,6 +8,12 @@ import { FaMedal } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { formatISO } from 'date-fns';
 import Celebration from '../components/Celebration';
+import emailjs from "@emailjs/browser";
+import { FaPaperPlane, FaTimes } from "react-icons/fa";
+
+const SERVICE_ID = "service_wcgoxz2";
+const TEMPLATE_ID = "template_cww92fu";
+const PUBLIC_KEY = "9ahe1ajax_Tg2Z-4O";
 
 export default function UserProfile() {
   const { user } = useContext(AuthContext);
@@ -17,7 +23,34 @@ export default function UserProfile() {
   const [nextBadge, setNextBadge] = useState('N/A');
   const [showCertConfetti, setShowCertConfetti] = useState(false);
   const [seenReadyIds, setSeenReadyIds] = useState(new Set());
+  const [open, setOpen] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const formRef = useRef(null);
   const navigate = useNavigate();
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    setSending(true);
+
+    emailjs
+      .sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, PUBLIC_KEY)
+      .then(() => {
+        setSuccessMsg("✅ Message sent successfully!");
+        formRef.current.reset();
+        setSending(false);
+        // Optionally auto-close after delay
+        setTimeout(() => {
+          setOpen(false);
+          setSuccessMsg("");
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("❌ Failed to send message. Please try again.");
+        setSending(false);
+      });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -297,7 +330,7 @@ export default function UserProfile() {
             transition={{ duration: 0.4 }}
             className="max-w-xl bg-white border border-gray-200 rounded-xl shadow p-6 flex items-center gap-6"
           >
-            <HiOutlineLightningBolt className="text-4xl text-[#1e40af]" />
+            {/* <HiOutlineLightningBolt className="text-4xl text-[#1e40af]" /> */}
             <div className="flex-1">
               <h4 className="text-lg font-bold text-[#1e40af]">
                 {recommended.subject?.name}
@@ -318,9 +351,8 @@ export default function UserProfile() {
 
       {/* Support card */}
       <section className="max-w-6xl mx-auto mt-20">
-        <div className="relative overflow-hidden rounded-3xl shadow-xl p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 text-white
-      bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800">
-          {/* decorative burst */}
+        {/* Background card */}
+        <div className="relative overflow-hidden rounded-3xl shadow-xl p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 text-white bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800">
           <span className="absolute -top-16 -left-20 w-72 h-72 bg-indigo-500/30 rounded-full blur-3xl" />
 
           <div className="relative z-10">
@@ -329,18 +361,86 @@ export default function UserProfile() {
               Our mentors reply within&nbsp;<strong>&lt; 3&nbsp;h</strong>.
             </p>
           </div>
-          <a
-            href="mailto:mastercodemultiverse@gmail.com?subject=Need%20Help%20with%20Code%20MultiVerse&body=Hi%20Support%20Team%2C%0A%0AI%20need%20assistance%20with%20the%20following%20issue%3A%0A%5BPlease%20describe%20your%20problem%20here%5D%0A%0AThanks%2C%0A%5BYour%20Name%5D"
+
+          <button
+            onClick={() => setOpen(true)}
             className="relative z-10 inline-flex items-center gap-2 bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-full shadow-md hover:shadow-lg transition"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M2 4h20v16H2z" opacity=".1" />
-              <path d="M22 6.6V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2.6l10 6.3 10-6.3ZM22 9.4l-10 6.3-10-6.3V20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9.4Z" />
-            </svg>
+            <FaPaperPlane className="w-5 h-5" />
             Contact&nbsp;Support
-          </a>
+          </button>
         </div>
+
+        {/* Popup modal */}
+        {open && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+            onClick={() => !sending && setOpen(false)}
+          >
+            <form
+              ref={formRef}
+              onSubmit={handleSend}
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-white max-w-md w-full rounded-2xl p-8 space-y-4 shadow-xl"
+            >
+              {/* Close button */}
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
+              >
+                <FaTimes className="w-5 h-5" />
+              </button>
+
+              <h3 className="text-xl font-bold text-indigo-800 mb-2">
+                Write to Code MultiVerse
+              </h3>
+
+              {successMsg && (
+                <div className="text-green-700 bg-green-100 p-3 rounded-md text-sm">
+                  {successMsg}
+                </div>
+              )}
+
+              <input
+                name="name"
+                placeholder="Your name"
+                required
+                className="w-full border rounded px-3 py-2"
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Your email"
+                required
+                className="w-full border rounded px-3 py-2"
+              />
+              <input
+                name="subject"
+                placeholder="Subject"
+                defaultValue="Need Help with Code MultiVerse"
+                className="w-full border rounded px-3 py-2"
+              />
+              <textarea
+                name="message"
+                rows="4"
+                placeholder="How can we help?"
+                required
+                className="w-full border rounded px-3 py-2"
+              />
+
+              <button
+                type="submit"
+                disabled={sending}
+                className="w-full bg-indigo-700 hover:bg-indigo-800 text-white py-2 rounded font-semibold disabled:opacity-60"
+              >
+                {sending ? "Sending…" : "Send Message"}
+              </button>
+            </form>
+          </div>
+        )}
       </section>
+
       <LockAlert data={alert} onClose={() => setAlert(null)} />
       {showCertConfetti && (
         <Celebration onDone={() => setShowCertConfetti(false)} />

@@ -59,6 +59,8 @@ app.use("/api/user", authRoutes);
 app.use('/api/quiz', require('./routes/userCourseRoutes')); // ✅ quiz submission
 app.use('/api/challenges', require('./routes/challengeRoutes'));
 app.use('/api/assignments', require('./routes/assignmentRoutes'));
+// app.use('/api/payment', require('./routes/paymentRoutes'));
+
 
 (app._router?.stack || [])
   .filter(r => r.route)

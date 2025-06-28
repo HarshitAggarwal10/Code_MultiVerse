@@ -4,23 +4,6 @@ const enrolledSubjectSchema = new mongoose.Schema({
   domain: String,
   subject: String,
   price: Number,
-  paymentStatus: {
-    type: String,
-    enum: ["paid", "unpaid"],
-    default: "unpaid"
-  },
-  progress: {
-    type: Number,
-    default: 0
-  },
-  certificateUrl: {
-    type: String,
-    default: ""
-  },
-  badge: {
-    type: String,
-    default: ""
-  }
 });
 
 const userSchema = new mongoose.Schema({
