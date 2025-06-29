@@ -1,5 +1,5 @@
 const Domain = require('../models/Domain');
-const Subject = require('../models/Subject');
+// const Subject = require('../models/Subject');
 
 // Create a new domain
 exports.createDomain = async (req, res) => {

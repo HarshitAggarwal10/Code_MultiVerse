@@ -35,27 +35,31 @@ const authMiddleware = (req, res, next) => {
 // };
 
 const protect = async (req, res, next) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ message: "Not authorized, no token" });
+  if (req.isAuthenticated && req.isAuthenticated()) {          // <-- NEW
+    return next();
   }
+
+  /* ② Otherwise fall back to JWT check (unchanged part) */
+  const token =
+      req.cookies.token ||                   // from cookie
+      req.headers["x-access-token"] ||       // custom header
+      (req.headers.authorization || "").split(" ")[1]; // Bearer <token>
+
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
-
-    if (!user) {
-      return res.status(401).json({ message: "Not authorized, user not found" });
-    }
-
-    req.user = user; // ✅ safely attach user
+    req.user = await User.findById(decoded.id).select("-password");
     next();
   } catch (err) {
-    console.error("Auth error:", err);
-    return res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Unauthorized" });
   }
 };
 
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  return res.status(401).json({ message: "Unauthorized" });
+}
 
-module.exports = { protect, authMiddleware };
+
+module.exports = { protect, authMiddleware, isAuthenticated };

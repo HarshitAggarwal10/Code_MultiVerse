@@ -24,7 +24,7 @@ export default function Domains() {
         }
         setSubjectsByDomain(newSubjects);
 
-        const myCoursesRes = await api.get('/user-courses/my-courses');
+        const myCoursesRes = await api.get('/user-courses/my-courses',);
         const enrolledMap = {};
         myCoursesRes.data.forEach(course => {
           if (course.subject && course.subject._id) {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
+const { protect, isAuthenticated } = require('../middleware/authMiddleware');
 const Subject = require('../models/Subject');
 const UserCourse = require('../models/UserCourse');
 const User = require('../models/User');
@@ -15,37 +15,10 @@ const mongoose = require('mongoose');
 
 router.post('/enroll', protect, enrollInSubject);
 router.post('/pay', protect, markPaymentPaid);
-router.get('/my-courses', protect, getUserCourses);
+router.get('/my-courses', protect,isAuthenticated, getUserCourses);
 router.post('/progress/:subjectId', protect, updateTopicProgress);
 router.post('/create-order', protect, createOrder);
 router.post('/confirm', protect, confirmPayment);
-
-// router.post('/progress/:subjectId', protect, async (req, res) => {
-//   try {
-//     const { subjectId } = req.params;          // course._id
-//     const { topic } = req.body;            // numeric index
-//     const userId = req.user.id;
-
-//     /* upsert course entry & push topic into a set                          */
-//     const course = await UserCourse.findOneAndUpdate(
-//       { userId, subject: subjectId },
-//       { $addToSet: { completedTopics: topic } },
-//       { new: true, upsert: true }
-//     );
-
-//     /* recompute % (topics length lives on the Subject doc)                 */
-//     const { topics } = await Subject.findById(subjectId).select('topics');
-//     course.progress = Math.round(
-//       (course.completedTopics.length / topics.length) * 100
-//     );
-//     await course.save();
-
-//     res.json({ progress: course.progress, completedTopics: course.completedTopics });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Could not update progress', error: err.message });
-//   }
-// });
 
 router.post('/:id/submit', protect, async (req, res) => {
   const { id } = req.params;            // subject id
@@ -61,7 +34,7 @@ router.post('/:id/submit', protect, async (req, res) => {
 
   let badge = 'none';
   if (score >= 80) badge = 'gold';
-  else if (score >= 60) badge = 'silver';
+  else if (score >= 50) badge = 'silver';
   else if (score >= 40) badge = 'bronze';
 
   /* ---- persist on UserCourse ---- */

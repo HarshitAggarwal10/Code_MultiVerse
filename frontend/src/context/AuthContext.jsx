@@ -8,12 +8,23 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(cached ? JSON.parse(cached) : null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Move fetchUser to top-level so it can be reused
   const fetchUser = async () => {
     try {
-      const res = await api.get("/auth/user");
+      const res = await axios.get("http://localhost:5000/auth/user", {
+        withCredentials: true,
+      });
+
       if (res.data) {
-        setUser(res.data);
-        localStorage.setItem("user", JSON.stringify(res.data));
+        const cleaned = {
+          _id: res.data._id,
+          email: res.data.email,
+          name: res.data.name,
+          isAdmin: res.data.isAdmin || false,
+        };
+        setUser(cleaned);
+        localStorage.setItem("user", JSON.stringify(cleaned));
+        console.log("Fetched user after OAuth login:", cleaned);
       } else {
         setUser(null);
         localStorage.removeItem("user");
@@ -21,28 +32,34 @@ const AuthProvider = ({ children }) => {
     } catch (err) {
       setUser(null);
       localStorage.removeItem("user");
+      console.error("Failed to fetch user:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUser();
+    fetchUser(); // ✅ now works because it's defined above
   }, []);
 
   const login = (payload /* { token, user } */) => {
     setUser(payload.user);
     localStorage.setItem('user', JSON.stringify(payload.user));
-    localStorage.setItem('token', payload.token);   // save real token
+    localStorage.setItem('token', payload.token);
   };
 
-
   const logout = async () => {
-    await axios.get("http://localhost:5000/auth/logout", {
-      withCredentials: true,
-    });
-    setUser(null);
-    localStorage.removeItem("user");
+    try {
+      await axios.get("http://localhost:5000/auth/logout", {
+        withCredentials: true,
+      });
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
   };
 
   return (

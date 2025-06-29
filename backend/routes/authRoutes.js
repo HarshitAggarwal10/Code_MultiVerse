@@ -42,9 +42,10 @@ router.get("/user", (req, res) => {
 
 // Logout
 router.get("/logout", (req, res) => {
-    req.logout(() => {
-        res.redirect("http://localhost:5173/auth");
-    });
+  req.logout(() => {
+    res.clearCookie("connect.sid"); // <- if using express-session
+    res.status(200).json({ message: "Logged out successfully" });
+  });
 });
 
 router.get("/profile", protect, getUserProfile);
