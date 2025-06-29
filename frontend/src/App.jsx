@@ -60,13 +60,6 @@ function Layout() {
           <Route path="/my-courses" element={<MyCourses />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/certificate/:subjectId" element={<CertificatePage />} />
-          {/* <Route path="/admin" element={
-            <AdminRoute>
-              <Suspense fallback={<p>Loading…</p>}>
-                <AdminApp />
-              </Suspense>
-            </AdminRoute>
-          } /> */}
         </Routes>
       </div>
       {!hideLayout && <Footer />}

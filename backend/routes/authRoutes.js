@@ -50,4 +50,6 @@ router.get("/logout", (req, res) => {
 
 router.get("/profile", protect, getUserProfile);
 
+
+
 module.exports = router;

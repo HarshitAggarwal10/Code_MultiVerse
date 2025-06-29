@@ -1,5 +1,5 @@
 import { useState, useContext, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import { FaTimes, FaBars, FaUserCircle } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { MdLogout, MdOutlineAccountCircle } from "react-icons/md";

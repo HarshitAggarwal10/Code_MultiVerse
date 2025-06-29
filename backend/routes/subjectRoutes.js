@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { createSubject, getSubjectsByDomain, getSubjectById } = require('../controllers/subjectController');
-// const auth = require('../middleware/authMiddleware');
 const { protect } = require('../middleware/authMiddleware');
 const Subject = require('../models/Subject');
 const upload  = require('../utils/multer');
