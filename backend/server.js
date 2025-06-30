@@ -20,7 +20,7 @@ const userCourseRoutes = require('./routes/userCourseRoutes');
 const app = express();
 
 app.use(cors({
-  origin: "https://code-multiverse.vercel.app",
+  origin: "https://code-multiverse-frontend.onrender.com",
   credentials: true,
 }));
 
