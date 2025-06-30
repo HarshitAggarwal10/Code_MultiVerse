@@ -18,7 +18,7 @@ export default function Domains() {
     const fetchAll = async () => {
       try {
         /* ① domains */
-        const { data: domainList } = await api.get("/domains");
+        const { data: domainList } = await api.get("/api/domains");
         setDomains(domainList);
 
         /* ② subjects for each domain (in parallel) */
