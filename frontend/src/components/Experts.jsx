@@ -1,139 +1,141 @@
-import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  FaLinkedinIn,
+  FaGithub,
+  FaDiscord,
+  FaInstagram,
+  FaEnvelope,
+} from "react-icons/fa";
 import Mine from "../images/mine.png";
-import Jiyansh from "../images/jiyansh.jpg";
-import Apurav from "../images/photo_id (grey).png";
-import { FaInstagram, FaLinkedinIn } from "react-icons/fa";
 
-const experts = [
-  {
-    name: "Harshit Aggarwal",
-    role: "MERN Stack Developer",
-    img: Mine,
-    bio: "Harshit is a passionate developer and the founder of CodeMultiVerse. He specializes in building scalable MERN applications.",
-    skills: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
-    links: {
-      instagram: "https://www.instagram.com/iamharshitaggarwal/",
-      linkedin: "https://www.linkedin.com/in/harshit-aggarwal-85309a296/",
-    },
-  },
-  {
-    name: "Apurav Gautam",
-    role: "MERN Stack Developer",
-    img: Apurav,
-    bio: "Apurav is a backend enthusiast who loves optimizing APIs and building secure, efficient systems.",
-    skills: ["Node.js", "Express", "MongoDB", "JWT", "REST APIs"],
-    links: {
-      instagram: "https://www.instagram.com/apurav_990/",
-      linkedin: "https://www.linkedin.com/in/apurav-gautam-b19b9428b/",
-    },
-  },
-  {
-    name: "Jiyansh Kalra",
-    role: "MERN Stack Developer",
-    img: Jiyansh,
-    bio: "Jiyansh is focused on UI/UX, and brings life to CodeMultiVerse with intuitive design and great interfaces.",
-    skills: ["Figma", "CSS", "React", "UI/UX", "Tailwind"],
-    links: {
-      instagram: "https://www.instagram.com/apurav_990/",
-      linkedin: "https://www.linkedin.com/in/jiyansh-kalra-9374ab290/",
-    },
-  },
-];
-
-const Experts = () => {
-  const [selectedExpert, setSelectedExpert] = useState(null);
-
-  const closeModal = () => setSelectedExpert(null);
-
+export default function FounderCard() {
   return (
     <section
-      id="experts"
-      className="relative px-6 md:px-12 py-24 bg-gradient-to-br from-blue-50 to-indigo-100 text-center overflow-hidden mt-24"
+      id="founder"
+      className="relative isolate px-6 md:px-12 py-28 bg-gradient-to-br from-blue-50 via-sky-100 to-indigo-100 overflow-hidden"
     >
-      {/* 3D Backgrounds */}
-      <div className="absolute top-[-60px] left-[-60px] w-[300px] h-[300px] bg-indigo-300 opacity-30 rounded-full filter blur-3xl z-0 animate-pulse"></div>
-      <div className="absolute bottom-[-80px] right-[-80px] w-[300px] h-[300px] bg-yellow-300 opacity-30 rounded-full filter blur-3xl z-0 animate-pulse"></div>
+      <AnimatedBlob className="top-[-80px] left-[-80px] bg-indigo-300" />
+      <AnimatedBlob className="bottom-[-100px] right-[-90px] bg-rose-200 delay-1500" />
 
-      <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 z-10 relative">
-        Meet Our Core Team
-      </h1>
-      <p className="text-lg md:text-xl text-gray-600 mt-3 mb-14 italic z-10 relative">
-        “CodeMultiVerse isn't just a platform — it's a revolution built by passionate minds.”
-      </p>
+      <header className="relative z-10 mb-20 text-center">
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 font-serif">
+          Meet the Founder
+        </h1>
+        <p className="mt-4 text-lg md:text-2xl text-gray-600 italic max-w-2xl mx-auto">
+          "One vision • One developer driving CodeMultiVerse forward"
+        </p>
+      </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 relative z-10">
-        {experts.map((expert, idx) => (
-          <div
-            key={idx}
-            onClick={() => setSelectedExpert(expert)}
-            className="cursor-pointer backdrop-blur-md bg-white/60 border border-white/40 rounded-2xl shadow-xl p-8 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-2xl"
+      <div className="relative z-10 flex justify-center">
+        <motion.div
+          whileHover={{ scale: 1.02, rotate: 0.3 }}
+          transition={{ type: "spring", stiffness: 120, damping: 12 }}
+          className="group w-full max-w-6xl backdrop-blur-[10px] bg-white/60 border border-white/30 shadow-[0_12px_50px_-12px_rgba(0,0,0,0.25)] rounded-[2rem] overflow-hidden py-14 px-8 md:px-20 flex flex-col md:flex-row gap-12 md:gap-16"
+        >
+          {/* Creative Portrait Card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="shrink-0 self-center"
           >
-            <img
-              src={expert.img}
-              alt={expert.name}
-              className="w-60 h-60 object-cover mx-auto rounded-full border-4 border-indigo-100 shadow-lg"
-            />
-            <h3 className="text-2xl font-bold text-indigo-900 mt-6">{expert.name}</h3>
-            <p className="text-md text-indigo-700 font-medium">{expert.role}</p>
+            <div className="relative w-72 h-72 rounded-3xl bg-white/40 border border-white/30 shadow-xl p-3">
+              <div className="absolute inset-0 rounded-3xl border-4 border-indigo-200 opacity-60 animate-pulse"></div>
+              <img
+                src={Mine}
+                alt="Harshit Aggarwal"
+                className="w-full h-full object-cover rounded-2xl border-4 border-white shadow-md hover:shadow-2xl transition-shadow duration-500"
+              />
+            </div>
+          </motion.div>
 
-            <div className="flex justify-center gap-5 mt-6">
+          {/* Content */}
+          <div className="flex-1 text-left max-w-3xl mx-auto">
+            <h2 className="text-4xl font-bold text-indigo-900 mb-2 leading-snug tracking-tight font-serif">
+              Harshit Aggarwal
+            </h2>
+            <p className="text-2xl text-indigo-700 font-medium mb-6">
+              Full‑Stack & MERN Developer
+            </p>
+
+            <p className="text-gray-800/90 leading-relaxed mb-4">
+              I'm a <span className="font-semibold">19‑year‑old software engineer</span> and the
+              founder of <span className="font-semibold">CodeMultiVerse</span>. I specialize in
+              building scalable full‑stack applications with the MERN stack and bring a passion
+              for <span className="font-semibold">AI</span>, competitive programming, and elegant UI/UX
+              engineering.
+            </p>
+            <p className="text-gray-800/90 leading-relaxed mb-6">
+              My mission is to empower the next generation of developers through real‑world
+              projects, education, and community collaboration — turning ideas into delightful
+              digital products.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 mb-8">
               <a
-                href={expert.links.instagram}
-                target="_blank"
-                rel="noreferrer"
-                className="text-pink-600 hover:bg-pink-600 hover:text-white border border-pink-600 p-3 rounded-full transition duration-300 text-xl"
+                href="mailto:harshitaggarwal100306@gmail.com"
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-indigo-800 border border-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors"
               >
-                <FaInstagram />
-              </a>
-              <a
-                href={expert.links.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-600 p-3 rounded-full transition duration-300 text-xl"
-              >
-                <FaLinkedinIn />
+                <FaEnvelope /> harshitaggarwal100306@gmail.com
               </a>
             </div>
+
+            <div className="flex gap-4 text-[1.45rem]">
+              <SocialIcon
+                href="https://www.linkedin.com/in/harshit-aggarwal-85309a296/"
+                label="LinkedIn"
+                bg="bg-[#0A66C2]"
+              >
+                <FaLinkedinIn />
+              </SocialIcon>
+              <SocialIcon href="https://github.com/harshitagg" label="GitHub" bg="bg-gray-800">
+                <FaGithub />
+              </SocialIcon>
+              <SocialIcon
+                href="https://discordapp.com/users/harshit#1003"
+                label="Discord"
+                bg="bg-indigo-600"
+              >
+                <FaDiscord />
+              </SocialIcon>
+              <SocialIcon
+                href="https://www.instagram.com/iamharshitaggarwal/"
+                label="Instagram"
+                bg="bg-gradient-to-tr from-pink-500 to-orange-500"
+              >
+                <FaInstagram />
+              </SocialIcon>
+            </div>
           </div>
-        ))}
+        </motion.div>
       </div>
-
-      {/* Modal */}
-      {selectedExpert && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 md:p-10 shadow-2xl relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-3 right-4 text-2xl font-bold text-gray-500 hover:text-red-500"
-            >
-              &times;
-            </button>
-
-            <img
-              src={selectedExpert.img}
-              alt={selectedExpert.name}
-              className="w-40 h-40 rounded-full mx-auto mb-4 border-4 border-indigo-200 shadow-md"
-            />
-            <h2 className="text-3xl font-bold text-indigo-900 text-center">{selectedExpert.name}</h2>
-            <p className="text-md text-indigo-700 text-center mb-2">{selectedExpert.role}</p>
-            <p className="text-gray-700 text-center italic mb-4">{selectedExpert.bio}</p>
-
-            <h4 className="text-lg font-semibold text-indigo-800">Skills</h4>
-            <ul className="flex flex-wrap gap-2 justify-center mt-2">
-              {selectedExpert.skills.map((skill, i) => (
-                <li
-                  key={i}
-                  className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium"
-                >
-                  {skill}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
     </section>
   );
-};
+}
 
-export default Experts;
+function SocialIcon({ href, label, children, bg }) {
+  return (
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      className={`grid place-items-center w-12 h-12 rounded-full text-white ${bg} shadow-lg hover:shadow-xl transition-shadow duration-300`}
+      whileHover={{ y: -6, rotate: 5 }}
+      transition={{ type: "spring", stiffness: 200 }}
+    >
+      {children}
+    </motion.a>
+  );
+}
+
+function AnimatedBlob({ className = "", ...rest }) {
+  return (
+    <motion.div
+      className={`absolute w-[280px] h-[280px] rounded-full blur-3xl opacity-30 ${className}`}
+      animate={{ y: [0, 60, 0] }}
+      transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      {...rest}
+    />
+  );
+}
