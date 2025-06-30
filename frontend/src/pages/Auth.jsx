@@ -15,8 +15,8 @@ export default function AuthPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const endpoint = isLogin
-            ? "http://localhost:5000/api/auth/login"
-            : "http://localhost:5000/api/auth/signup";
+            ? `${import.meta.env.VITE_API_URL}/api/auth/login`
+            : `${import.meta.env.VITE_API_URL}/api/auth/signup`;
 
         const body = isLogin ? { email, password } : { name, email, password };
 
@@ -133,22 +133,19 @@ export default function AuthPage() {
                     <button
                         className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
                         aria-label="Login with Google"
-                        onClick={() => window.location.href = "http://localhost:5000/auth/google"} // ✅ Add this
-                    >
+                        onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`}                    >
                         <FaGoogle className="text-gray-200 text-xl" />
                     </button>
                     <button
                         className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
                         aria-label="Login with GitHub"
-                        onClick={() => window.location.href = "http://localhost:5000/auth/github"} // ✅ Add this
-                    >
+                        onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`}                    >
                         <FaGithub className="text-gray-200 text-xl" />
                     </button>
                     <button
                         className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
                         aria-label="Login with Apple"
-                        onClick={() => window.open("http://localhost:5000/auth/discord")}
-                    >
+                        onClick={() => window.open(`${import.meta.env.VITE_API_URL}/auth/discord`)}                    >
                         <FaDiscord className="text-gray-200 text-xl" />
                     </button>
                 </div>

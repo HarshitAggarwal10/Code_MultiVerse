@@ -20,7 +20,7 @@ const userCourseRoutes = require('./routes/userCourseRoutes');
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://code-multiverse.vercel.app",
   credentials: true,
 }));
 
@@ -40,7 +40,9 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000      // 7-day cookie in browser
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: true,             // ✅ Important on HTTPS/Render
+      sameSite: 'none',      // 7-day cookie in browser
     }
   })
 );

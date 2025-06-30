@@ -102,3 +102,8 @@ passport.use(
 //AQVypBMqREOO4tkCuJ4J5JY0_VbXjDDTadMBRQxrHqWSwf6hb0nnHcsTNMnfBabk-NRmxqmS26Vh6jtFJKkIJQNZpvoulyTVPg5HZwyb-7K93P4H-zDOeNFkjWwLi0xl88b7wyw0OlmoCawuITy73fOANrZB5g-Lt9O_gsP8sayVba644vl5AWxsvDihQTwBFDYZEhn1OtezEWXcXVdG2CFxQld3sKO1zXC6FdFTC8oOuVJKp55jbeZUHNb1dULh_L4nIqAlEI4lbf_xPOw_2mNjrFU1wvZ370aCM-3GUyoYY6a9LQ9tLAUdlrI5PMrahTC841MLM-qwQYzDlYDXVoBjA6vzeQ
 
 //https://discord.com/oauth2/authorize?client_id=1383712277735276564&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fauth%2Fdiscord%2Fcallback&scope=identify+email
+
+
+//PnTC2aBVXi38UPCC password mongodb atlas  harshitaggarwal100306
+//mongodb+srv://<db_username>:<db_password>@cluster0.ywvm32s.mongodb.net/
+//mongodb+srv://<db_username>:<db_password>@cluster0.ywvm32s.mongodb.net/

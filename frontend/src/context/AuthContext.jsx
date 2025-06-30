@@ -11,7 +11,7 @@ const AuthProvider = ({ children }) => {
   // ✅ Move fetchUser to top-level so it can be reused
   const fetchUser = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/auth/user", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/user`, {
         withCredentials: true,
       });
 
@@ -50,7 +50,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.get("http://localhost:5000/auth/logout", {
+      await axios.get(`${import.meta.env.VITE_API_URL}/auth/logout`, {
         withCredentials: true,
       });
     } catch (err) {
