@@ -55,7 +55,7 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await api.get('/user-courses/my-courses');
+        const res = await api.get('/api/user-courses/my-courses');
         setCourses(res.data || []);
         const activityDates = new Set();
         (res.data || []).forEach(c => {
@@ -248,7 +248,7 @@ export default function UserProfile() {
           </p>
           <button
             onClick={() => navigate(
-              `/certificate/${readyCourse.subject._id}`         // opens a new tab and avoids SPA routing clash
+              `/api/certificate/${readyCourse.subject._id}`         // opens a new tab and avoids SPA routing clash
             )}
             className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-sm font-semibold">
             Download&nbsp;Certificate
@@ -340,7 +340,7 @@ export default function UserProfile() {
               </p>
             </div>
             <button
-              onClick={() => navigate(`/course/${recommended.subject?._id}`)}
+              onClick={() => navigate(`/api/course/${recommended.subject?._id}`)}
               className="bg-[#1e40af] hover:bg-[#1e3a8a] text-white px-4 py-2 rounded text-sm font-semibold"
             >
               Resume
@@ -518,7 +518,7 @@ const CourseGrid = ({ data, accent, completed = false, openAlert }) => {
                 onClick={() => {
                   if (canDownload) {
                     // open certificate IN THE SAME TAB
-                    navigate(`/certificate/${c.subject._id}`);
+                    navigate(`/api/certificate/${c.subject._id}`);
                   } else {
                     // show “finish course first” modal
                     openAlert?.({ course: c.subject?.name });
