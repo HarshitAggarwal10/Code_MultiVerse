@@ -16,8 +16,8 @@ export default function AuthPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const endpoint = isLogin
-            ? `${import.meta.env.VITE_API_URL}/api/auth/login`
-            : `${import.meta.env.VITE_API_URL}/api/auth/signup`;
+            ? `/api/auth/login`
+            : `/api/auth/signup`;
 
         const body = isLogin ? { email, password } : { name, email, password };
 
@@ -122,25 +122,10 @@ export default function AuthPage() {
                     <div className="flex-grow h-px bg-white/20" />
                 </div>
 
-                <div className="flex justify-center gap-4">
-                    <button
-                        className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
-                        aria-label="Login with Google"
-                        onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`}                    >
-                        <FaGoogle className="text-gray-200 text-xl" />
-                    </button>
-                    <button
-                        className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
-                        aria-label="Login with GitHub"
-                        onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`}                    >
-                        <FaGithub className="text-gray-200 text-xl" />
-                    </button>
-                    <button
-                        className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
-                        aria-label="Login with Apple"
-                        onClick={() => window.open(`${import.meta.env.VITE_API_URL}/auth/discord`)}                    >
-                        <FaDiscord className="text-gray-200 text-xl" />
-                    </button>
+                <div className="mt-8 flex justify-center gap-4">
+                    <button onClick={() => window.location.href = `${OAUTH}/google`} className="p-3 bg-white/10 rounded-full"><FaGoogle /></button>
+                    <button onClick={() => window.location.href = `${OAUTH}/github`} className="p-3 bg-white/10 rounded-full"><FaGithub /></button>
+                    <button onClick={() => window.location.href = `${OAUTH}/discord`} className="p-3 bg-white/10 rounded-full"><FaDiscord /></button>
                 </div>
 
                 <p className="text-center text-gray-400 mt-6 text-sm">

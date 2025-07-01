@@ -1,55 +1,51 @@
-const express = require("express");
-const passport = require("passport");
-const router = express.Router();
-const jwt = require("jsonwebtoken");
-const { getUserProfile } = require("../controllers/authController");
-const { protect } = require("../middleware/authMiddleware");
+const express   = require("express");
+const passport  = require("passport");
+const router    = express.Router();
 
-// Google OAuth
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+const FRONT_URL = "https://code-multi-verse.vercel.app";
+
+/* ───────── GOOGLE ───────── */
+router.get("/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 router.get("/google/callback",
-    passport.authenticate("google", {
-        successRedirect: "https://code-multi-verse.vercel.app/domains",
-  failureRedirect: "https://code-multi-verse.vercel.app/login"
-    })
-);
-
-// GitHub OAuth
-router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
-router.get("/github/callback",
-    passport.authenticate("github", {
-        successRedirect: "https://code-multi-verse.vercel.app/domains",
-  failureRedirect: "https://code-multi-verse.vercel.app/login"
-    })
-);
-
-// Discord login
-router.get("/discord", passport.authenticate("discord"));
-
-// Discord callback
-router.get(
-  "/discord/callback",
-  passport.authenticate("discord", {
-   successRedirect: "https://code-multi-verse.vercel.app/domains",
-  failureRedirect: "https://code-multi-verse.vercel.app/login"
+  passport.authenticate("google", {
+    successRedirect: `${FRONT_URL}/domains`,
+    failureRedirect: `${FRONT_URL}/login`
   })
 );
 
-// Get Current Authenticated User
-router.get("/user", (req, res) => {
-    res.json(req.user || null);
-});
+/* ───────── GITHUB ───────── */
+router.get("/github",
+  passport.authenticate("github", { scope: ["user:email"] })
+);
+router.get("/github/callback",
+  passport.authenticate("github", {
+    successRedirect: `${FRONT_URL}/domains`,
+    failureRedirect: `${FRONT_URL}/login`
+  })
+);
 
-// Logout
+/* ───────── DISCORD ───────── */
+router.get("/discord",
+  passport.authenticate("discord")
+);
+router.get("/discord/callback",
+  passport.authenticate("discord", {
+    successRedirect: `${FRONT_URL}/domains`,
+    failureRedirect: `${FRONT_URL}/login`
+  })
+);
+
+/* current session helper */
+router.get("/user", (req, res) => res.json(req.user || null));
+
+/* logout */
 router.get("/logout", (req, res) => {
   req.logout(() => {
-    res.clearCookie("connect.sid"); // <- if using express-session
-    res.status(200).json({ message: "Logged out successfully" });
+    res.clearCookie("connect.sid");
+    res.json({ message: "Logged out" });
   });
 });
-
-router.get("/profile", protect, getUserProfile);
-
-
 
 module.exports = router;
