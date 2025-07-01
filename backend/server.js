@@ -19,6 +19,7 @@ const userCourseRoutes = require('./routes/userCourseRoutes');
 
 const app = express();
 
+app.set("trust proxy", 1);
 app.use(cors({
   origin: "https://code-multi-verse.vercel.app", // ✅ Vercel URL
   credentials: true, // keep if you ever use cookies
