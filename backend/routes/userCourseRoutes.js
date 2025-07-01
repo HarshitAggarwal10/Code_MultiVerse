@@ -15,7 +15,7 @@ const mongoose = require('mongoose');
 
 router.post('/enroll', protect, enrollInSubject);
 router.post('/pay', protect, markPaymentPaid);
-router.get('/my-courses', protect,isAuthenticated, getUserCourses);
+router.get('/my-courses', protect, isAuthenticated, getUserCourses);
 router.post('/progress/:subjectId', protect, updateTopicProgress);
 router.post('/create-order', protect, createOrder);
 router.post('/confirm', protect, confirmPayment);

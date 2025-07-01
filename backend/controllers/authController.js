@@ -1,7 +1,7 @@
 /* ---------------- controllers/authController.js ---------------- */
-const User   = require('../models/User');
+const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-const jwt    = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 /* helper -------------------------------------------------------- */
 const generateToken = (user) => {
@@ -14,10 +14,10 @@ const generateToken = (user) => {
 };
 /* cookie options reused in both routes */
 const cookieOpts = {
-  httpOnly : true,
-  secure   : process.env.NODE_ENV === 'production',
-  sameSite : 'Strict',
-  maxAge   : 30 * 24 * 60 * 60 * 1000,        // 30 days
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'Strict',
+  maxAge: 30 * 24 * 60 * 60 * 1000,        // 30 days
 };
 
 /* ----------------------------- SIGN‑UP ------------------------ */
@@ -43,8 +43,14 @@ exports.signup = async (req, res) => {
     /* 4 . send body */
     return res.status(201).json({
       token,
-      user: { id: newUser._id, name: newUser.name, email: newUser.email },
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        isAdmin: newUser.isAdmin || false
+      },
     });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Registration failed' });
@@ -74,11 +80,16 @@ exports.login = async (req, res) => {
       .cookie('token', token, cookieOpts)
       .set('x-access-token', token);
 
-    /* 4 . send body */
     return res.json({
       token,
-      user: { id: user._id, name: user.name, email: user.email },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin || false
+      },
     });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Login failed' });
@@ -100,10 +111,10 @@ exports.getUserProfile = async (req, res) => {
     }
 
     return res.json({
-      name            : user.name,
-      email           : user.email,
+      name: user.name,
+      email: user.email,
       enrolledSubjects: user.enrolledSubjects,
-      createdAt       : user.createdAt,
+      createdAt: user.createdAt,
     });
   } catch (err) {
     console.error(err);
