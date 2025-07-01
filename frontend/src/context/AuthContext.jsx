@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
-
+import api from "../utils/api"; // Adjust the import path as needed
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
@@ -11,7 +10,7 @@ const AuthProvider = ({ children }) => {
   // ✅ Move fetchUser to top-level so it can be reused
   const fetchUser = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/user`, {
+      const res = await api.get(`${import.meta.env.VITE_API_URL}/auth/user`, {
         withCredentials: true,
       });
 
@@ -50,7 +49,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.get(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+      await api.get(`${import.meta.env.VITE_API_URL}/auth/logout`, {
         withCredentials: true,
       });
     } catch (err) {

@@ -40,8 +40,8 @@ export default function CertificatePage() {
 
         /* 1️⃣ – course & enrolment */
         const [{ data: subj }, { data: mine }] = await Promise.all([
-          api.get(`/subjects/${subjectId}`),
-          api.get('/user-courses/my-courses')
+          api.get(`/api/subjects/${subjectId}`),
+          api.get('/api/user-courses/my-courses')
         ]);
 
         const record = mine.find(r => r.subject?._id === subjectId);
@@ -53,7 +53,7 @@ export default function CertificatePage() {
         /* 2️⃣ – if the name is still missing, ask the user endpoint by id */
         if (!user?.name && record.userId) {
           try {
-            const { data } = await api.get(`/users/${record.userId}`);
+            const { data } = await api.get(`/api/users/${record.userId}`);
             if (data?.name) setFullName(data.name);
           } catch {/* silently ignore */ }
         }

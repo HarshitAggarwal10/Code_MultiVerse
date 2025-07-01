@@ -1,14 +1,15 @@
-import axios from 'axios';
+// src/utils/api.js
+import axios from "axios";
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: false, // ❌ no cookies
+  baseURL: import.meta.env.VITE_API_URL, // ✅ should be https://code-multiverse-backend.onrender.com
+  withCredentials: true, // ✅ to include cookies (just in case)
 });
 
 instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`; // ✅ Correct format
   }
   return config;
 });

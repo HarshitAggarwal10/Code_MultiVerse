@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
+import api from "../utils/api"; 
 
 export default function AuthPage() {
     const navigate = useNavigate();
@@ -21,14 +22,8 @@ export default function AuthPage() {
         const body = isLogin ? { email, password } : { name, email, password };
 
         try {
-            const res = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify(body),
-            });
-
-            const data = await res.json();
+            const { data } = await api.post(endpoint.replace(import.meta.env.VITE_API_URL, ''), body);
+            
             if (res.ok) {
                 if (isLogin) {
                     alert("Login successful");
