@@ -17,7 +17,7 @@ export const courses = [
     image: C1,
     rating: 4,
     reviews: 239,
-    price: "799",
+    price: "₹799",
     instructor: {
       name: "Harshit Aggarwal",
       image: C4,
