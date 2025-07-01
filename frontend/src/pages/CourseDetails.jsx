@@ -55,12 +55,12 @@ export default function CourseDetails() {
 
   useEffect(() => {
     setErr(null); setCourse(null);
-    api.get(`/subjects/${id}`)
+    api.get(`/api/subjects/${id}`)
       .then(r => setCourse(r.data))
       .catch(() => setErr('Course not found'));
 
     if (currentUser) {
-      api.get('/user-courses/my-courses').then(({ data }) => {
+      api.get('/api/user-courses/my-courses').then(({ data }) => {
         const entry = data.find(e => e.subject?._id === id);
         if (entry) setProgress(entry.progress ?? 0);
       });
