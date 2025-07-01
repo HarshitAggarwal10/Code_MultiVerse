@@ -117,7 +117,7 @@ export default function Domains() {
     }
   };
 
-  const handleContinueClick = (subjectId) => navigate(`/api/course/${subjectId}`);
+  const handleContinueClick = (subjectId) => navigate(`/course/${subjectId}`);
 
   /* ────────────────────────────── UI ──────────────────────────────────── */
   return (
