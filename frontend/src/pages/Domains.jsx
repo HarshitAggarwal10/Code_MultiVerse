@@ -23,7 +23,7 @@ export default function Domains() {
 
         /* ② subjects for each domain (in parallel) */
         const subjectPromises = domainList.map((d) =>
-          api.get(`/subjects/by-domain/${d._id}`)
+          api.get(`/api/subjects/by-domain/${d._id}`)
         );
         const subjectResults = await Promise.all(subjectPromises);
         const byDomain = {};
@@ -33,7 +33,7 @@ export default function Domains() {
         setSubjectsByDomain(byDomain);
 
         /* ③ my courses → keep payment + certificate status */
-        const { data: myCourses } = await api.get("/user-courses/my-courses", {
+        const { data: myCourses } = await api.get("/api/user-courses/my-courses", {
           withCredentials: true,
         });
 
@@ -61,7 +61,7 @@ export default function Domains() {
 
   const handleEnrollClick = async (subjectId) => {
     try {
-      await api.post("/user-courses/enroll", { subjectId });
+      await api.post("/api/user-courses/enroll", { subjectId });
       setEnrolledSubjects((p) => ({
         ...p,
         [subjectId]: { paymentStatus: "pending", certificateStatus: "none" },
@@ -82,7 +82,7 @@ export default function Domains() {
     if (!ok) return alert("Failed to load Razorpay – check connection");
 
     try {
-      const { data: order } = await api.post("/user-courses/create-order", {
+      const { data: order } = await api.post("/api/user-courses/create-order", {
         amount: subject.price,
       });
 
@@ -95,7 +95,7 @@ export default function Domains() {
         currency: order.currency,
         theme: { color: "#6366f1" },
         handler: async (resp) => {
-          await api.post("/user-courses/pay", {
+          await api.post("/api/user-courses/pay", {
             subjectId: subject._id,
             razorpayPaymentId: resp.razorpay_payment_id,
             razorpayOrderId: resp.razorpay_order_id,
@@ -117,7 +117,7 @@ export default function Domains() {
     }
   };
 
-  const handleContinueClick = (subjectId) => navigate(`/course/${subjectId}`);
+  const handleContinueClick = (subjectId) => navigate(`/api/course/${subjectId}`);
 
   /* ────────────────────────────── UI ──────────────────────────────────── */
   return (
