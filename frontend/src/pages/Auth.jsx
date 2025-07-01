@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
-import api from "../utils/api"; 
+import api from "../utils/api";
 
 export default function AuthPage() {
     const navigate = useNavigate();
@@ -23,21 +23,17 @@ export default function AuthPage() {
 
         try {
             const { data } = await api.post(endpoint.replace(import.meta.env.VITE_API_URL, ''), body);
-            
-            if (res.ok) {
-                if (isLogin) {
-                    alert("Login successful");
-                    login(data);
-                    navigate("/domains");
-                } else {
-                    alert("Signup successful. Please log in.");
-                    setIsLogin(true);        // ✅ Switch to login form
-                    setEmail("");            // ✅ Clear form fields (optional)
-                    setPassword("");
-                    setName("");
-                }
+
+            if (isLogin) {
+                alert("Login successful");
+                login(data); // this should contain { token, user }
+                navigate("/domains");
             } else {
-                alert(data.message || "Auth failed");
+                alert("Signup successful. Please log in.");
+                setIsLogin(true);
+                setEmail("");
+                setPassword("");
+                setName("");
             }
         } catch (err) {
             console.error(err);
