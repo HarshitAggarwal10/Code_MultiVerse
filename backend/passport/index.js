@@ -5,7 +5,7 @@ const GitHubStrategy  = require("passport-github2").Strategy;
 const DiscordStrategy = require("passport-discord").Strategy;
 const User            = require("../models/User");
 
-const BASE_URL = process.env.BACKEND_URL;
+const BASE_URL = process.env.VITE_API_URL;
 
 /* ────────────────── session helpers ────────────────── */
 passport.serializeUser((user, done) => done(null, user.id));
