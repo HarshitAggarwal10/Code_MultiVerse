@@ -9,8 +9,8 @@ const { protect } = require("../middleware/authMiddleware");
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback",
     passport.authenticate("google", {
-        successRedirect: "http://localhost:5173/domains",
-        failureRedirect: "http://localhost:5173/login"
+        successRedirect: "https://code-multi-verse.vercel.app/domains",
+  failureRedirect: "https://code-multi-verse.vercel.app/login"
     })
 );
 
@@ -18,8 +18,8 @@ router.get("/google/callback",
 router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
 router.get("/github/callback",
     passport.authenticate("github", {
-        successRedirect: "http://localhost:5173/domains",
-        failureRedirect: "http://localhost:5173/login"
+        successRedirect: "https://code-multi-verse.vercel.app/domains",
+  failureRedirect: "https://code-multi-verse.vercel.app/login"
     })
 );
 
@@ -30,8 +30,8 @@ router.get("/discord", passport.authenticate("discord"));
 router.get(
   "/discord/callback",
   passport.authenticate("discord", {
-    successRedirect: "http://localhost:5173/domains", // your frontend route
-    failureRedirect: "http://localhost:5173/login",
+   successRedirect: "https://code-multi-verse.vercel.app/domains",
+  failureRedirect: "https://code-multi-verse.vercel.app/login"
   })
 );
 
