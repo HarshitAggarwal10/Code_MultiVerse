@@ -2,10 +2,6 @@ const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 require('dotenv').config();
 
-/**
- * ✅ Middleware to protect routes using JWT
- * It expects token in Authorization header as: Bearer <token>
- */
 const protect = async (req, res, next) => {
   let token;
 
@@ -17,11 +13,16 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Attach user (excluding password) to request
+      // ✅ Set user from DB
       req.user = await User.findById(decoded.id).select('-password');
+
+      // ✅ Now log properly
+      console.log("✅ Token:", token);
+      console.log("✅ User from token:", req.user);
+
       return next();
     } catch (err) {
-      console.error('Token error:', err.message);
+      console.error('❌ Token error:', err.message);
       return res.status(401).json({ message: 'Unauthorized' });
     }
   }
@@ -29,9 +30,6 @@ const protect = async (req, res, next) => {
   return res.status(401).json({ message: 'Unauthorized' });
 };
 
-/**
- * Optional middleware if you're using sessions + Passport (OAuth)
- */
 const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) return next();
   return res.status(401).json({ message: "Unauthorized" });
