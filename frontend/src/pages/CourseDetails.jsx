@@ -116,13 +116,13 @@ export default function CourseDetails() {
     React.useEffect(() => {
       (async () => {
         try {
-          const res = await api.get('/user-courses/my-courses');
+          const res = await api.get('/api/user-courses/my-courses');
           const entry = res.data.find(
             (e) => (e.subject?._id || e.subject) === subjectId
           );
           const serverDone = entry?.completedTopics ?? [];
 
-          // ✅ Trust only server for new users — reset local
+          // ✅ Fresh users – reset local
           if (serverDone.length === 0) {
             localStorage.setItem(KEY, JSON.stringify([]));
             setDone([]);
@@ -130,16 +130,18 @@ export default function CourseDetails() {
             return;
           }
 
-          // Merge server + local if user already made progress
+          // ✅ Merge with local
           const localDone = JSON.parse(localStorage.getItem(KEY) || '[]');
           const merged = Array.from(new Set([...serverDone, ...localDone]));
           setDone(merged);
 
+          // ✅ Sync missing local topics to server
           const unsynced = localDone.filter((i) => !serverDone.includes(i));
           for (const idx of unsynced) {
-            await api.post(`/user-courses/progress/${subjectId}`, { topic: idx });
+            await api.post(`/api/user-courses/progress/${subjectId}`, { topic: idx });
           }
 
+          // ✅ Progress %
           const pct = Math.round((merged.length / topics.length) * 100);
           onProgressChange(pct);
           localStorage.setItem(KEY, JSON.stringify(merged));
@@ -152,19 +154,20 @@ export default function CourseDetails() {
     }, [subjectId, topics.length, onProgressChange]);
 
     const markComplete = async (idx) => {
-      if (done.includes(idx)) return;          // already counted
+      if (done.includes(idx)) return;
       const updated = [...done, idx];
       setDone(updated);
       localStorage.setItem(KEY, JSON.stringify(updated));
       onProgressChange(Math.round((updated.length / topics.length) * 100));
 
-      // persist server-side (& receive authoritative % back)
       try {
         const { data } = await api.post(
-          `/user-courses/progress/${subjectId}`,
+          `/api/user-courses/progress/${subjectId}`,
           { topic: idx }
         );
-        onProgressChange(data.progress);
+        if (data?.progress) {
+          onProgressChange(data.progress);
+        }
       } catch (err) {
         console.error('Could not save progress', err);
       }
