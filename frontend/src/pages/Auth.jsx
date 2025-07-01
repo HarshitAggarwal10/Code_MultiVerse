@@ -5,6 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import api from "../utils/api";
+import { auth } from "../utils/firebase";
+import {
+    GoogleAuthProvider,
+    GithubAuthProvider,
+    signInWithPopup,
+    getIdToken,
+} from "firebase/auth";
+
 
 export default function AuthPage() {
     const navigate = useNavigate();
@@ -40,8 +48,6 @@ export default function AuthPage() {
             alert("Error connecting to server");
         }
     };
-
-    const OAUTH = `${import.meta.env.VITE_API_URL}/auth`;
 
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0e2a] via-[#0d1b3e] to-[#0a0e2a] overflow-hidden">
@@ -123,9 +129,43 @@ export default function AuthPage() {
                 </div>
 
                 <div className="mt-8 flex justify-center gap-4">
-                    <button onClick={() => window.location.href = `${OAUTH}/google`} className="p-3 bg-white/10 rounded-full"><FaGoogle /></button>
-                    <button onClick={() => window.location.href = `${OAUTH}/github`} className="p-3 bg-white/10 rounded-full"><FaGithub /></button>
-                    <button onClick={() => window.location.href = `${OAUTH}/discord`} className="p-3 bg-white/10 rounded-full"><FaDiscord /></button>
+                    <button
+                        onClick={async () => {
+                            try {
+                                const provider = new GoogleAuthProvider();
+                                const { user } = await signInWithPopup(auth, provider);
+                                const idToken = await getIdToken(user);
+                                const { data } = await api.post("/api/auth/firebase", { idToken });
+                                login(data); // { token, user }
+                                navigate("/domains");
+                            } catch (err) {
+                                console.error(err);
+                                alert("Google sign-in failed");
+                            }
+                        }}
+                        className="p-3 bg-white/10 rounded-full"
+                    >
+                        <FaGoogle />
+                    </button>
+
+                    <button
+                        onClick={async () => {
+                            try {
+                                const provider = new GithubAuthProvider();
+                                const { user } = await signInWithPopup(auth, provider);
+                                const idToken = await getIdToken(user);
+                                const { data } = await api.post("/api/auth/firebase", { idToken });
+                                login(data); // { token, user }
+                                navigate("/domains");
+                            } catch (err) {
+                                console.error(err);
+                                alert("GitHub sign-in failed");
+                            }
+                        }}
+                        className="p-3 bg-white/10 rounded-full"
+                    >
+                        <FaGithub />
+                    </button>
                 </div>
 
                 <p className="text-center text-gray-400 mt-6 text-sm">

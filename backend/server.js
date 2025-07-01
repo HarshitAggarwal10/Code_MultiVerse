@@ -52,13 +52,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use("/auth", authRoutes);                        // ✅ for Google & GitHub OAuth
+// app.use("/auth", authRoutes);                        // ✅ for Google & GitHub OAuth
 app.use("/api/newsletter", require("./routes/newsletter")); // ✅ newsletter
 app.use("/api/auth", require("./routes/auth"));
 app.use('/api/domains', domainRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/user-courses', userCourseRoutes);
-app.use("/api/user", authRoutes);
+app.use("/api/auth", require("./routes/authFirebase"));
 app.use('/api/quiz', require('./routes/userCourseRoutes')); // ✅ quiz submission
 app.use('/api/challenges', require('./routes/challengeRoutes'));
 app.use('/api/assignments', require('./routes/assignmentRoutes'));
