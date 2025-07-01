@@ -44,7 +44,7 @@ export default function CourseDetails() {
 
   const refetchUserCourse = async () => {
     try {
-      const { data } = await api.get('/user-courses/my-courses');
+      const { data } = await api.get('/api/user-courses/my-courses');
       const entry = data.find(e => (e.subject?._id || e.subject) === id);
       setUserCourse(entry);          // if you want to store it
       // you can also refresh progress / certificate banners here
@@ -364,7 +364,7 @@ export default function CourseDetails() {
       try {
         const body = { answers: data.map((_, i) => answers[i] ?? '') };
         const { data: res } = await api.post(
-          `/user-courses/${subjectId}/submit`,
+          `/api/user-courses/${subjectId}/submit`,
           body
         );
         setResult(res);
@@ -529,7 +529,7 @@ export default function CourseDetails() {
       if (!chall?._id) return alert('Challenge id missing.');
       setOk(null);
       try {
-        const { data } = await api.post(`/challenges/${chall._id}/submit`, {
+        const { data } = await api.post(`/api/challenges/${chall._id}/submit`, {
           code,
           css: chall.starterCss || '',
           subjectId
@@ -639,7 +639,7 @@ export default function CourseDetails() {
       fd.append('file', zip);
 
       try {
-        const { data } = await api.post(`/assignments/${assn._id}/upload`, fd);
+        const { data } = await api.post(`/api/assignments/${assn._id}/upload`, fd);
 
         setStatus('ok');
         setMessage(data.message);
