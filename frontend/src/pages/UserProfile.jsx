@@ -248,7 +248,7 @@ export default function UserProfile() {
           </p>
           <button
             onClick={() => navigate(
-              `/api/certificate/${readyCourse.subject._id}`         // opens a new tab and avoids SPA routing clash
+              `/certificate/${readyCourse.subject._id}`         // opens a new tab and avoids SPA routing clash
             )}
             className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md text-sm font-semibold">
             Download&nbsp;Certificate
@@ -518,7 +518,7 @@ const CourseGrid = ({ data, accent, completed = false, openAlert }) => {
                 onClick={() => {
                   if (canDownload) {
                     // open certificate IN THE SAME TAB
-                    navigate(`/api/certificate/${c.subject._id}`);
+                    navigate(`/certificate/${c.subject._id}`);
                   } else {
                     // show “finish course first” modal
                     openAlert?.({ course: c.subject?.name });
