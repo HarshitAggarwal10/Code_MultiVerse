@@ -139,7 +139,7 @@ export default function CourseCard() {
             </div>
             <div className="mt-8 text-center">
               <a
-                href="#"
+                href="/auth"
                 className="inline-block w-full text-center px-6 py-3 bg-[#1e3a8a] text-white font-semibold rounded hover:bg-[#172554] transition shadow"
               >
                 Enroll Course
