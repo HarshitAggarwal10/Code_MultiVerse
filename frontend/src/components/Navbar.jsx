@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaTimes, FaBars, FaUserCircle } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { MdLogout, MdOutlineAccountCircle } from "react-icons/md";
-import logo from "../img/newLogo.png";
+import logo from "../img/newLogoBG.png";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
@@ -36,7 +36,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-[#0a0e2a] via-[#0d1b3e] to-[#0a0e2a] backdrop-blur-md shadow-lg border-b border-white/10 px-4 md:px-8 py-3 flex justify-between items-center transition-all duration-300">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-white/40 via-white/20 to-white/40 backdrop-blur-md shadow-lg border-b border-white/30 px-4 md:px-8 py-3 flex justify-between items-center transition-all duration-300">
       <div className="flex items-center gap-2">
         <img src={logo} alt="Logo" className="w-[150px] h-auto" />
       </div>
