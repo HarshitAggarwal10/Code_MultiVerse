@@ -5,7 +5,7 @@ import c2 from "../images/c2.jpg";
 import c3 from "../images/c3.jpg";
 import c4 from "../images/c4.jpg";
 import c5 from "../images/c5.jpg";
-import logo from "../quizpics/logo2-removebg-preview.png";
+import logo from "../img/newLogoBG.png";
 import { FaArrowRight } from "react-icons/fa";
 
 const sliderImages = [c1, c2, c3, c4, c5];
