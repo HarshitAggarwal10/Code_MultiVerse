@@ -56,7 +56,7 @@ const PopularCourses = () => {
             <img
               src={logo}
               alt="Logo"
-              className="w-25 h-20 animate-spin-slow"
+              className="w-30 h-23 animate-spin-slow"
               style={{ animation: "spin 10s linear infinite" }}
             />
             {/* <h3 className="text-4xl font-extrabold">
