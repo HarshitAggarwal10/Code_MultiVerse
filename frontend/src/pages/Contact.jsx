@@ -59,14 +59,10 @@ export default function Contact() {
 
           <Info title="📞 Phone">
             +91 80592 41824<br />
-            +91 98142 20340<br />
-            +91 78149 61169
           </Info>
 
           <Info title="✉️ Support">
             harshit0766.be23@chitkara.edu.in<br />
-            jiyansh0786.be23@chitkara.edu.in<br />
-            apurav0208.be23@chitkara.edu.in
           </Info>
 
           <Socials />
