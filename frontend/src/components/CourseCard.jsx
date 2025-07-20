@@ -55,15 +55,83 @@ export default function CourseCard() {
   return (
     <>
       <section
-        id="about-home"
-        className="w-full h-[85vh] bg-cover bg-center flex flex-col justify-center items-center text-center pt-10"
-        style={{
-          backgroundImage: `linear-gradient(rgba(25, 0, 60, 0.6), rgba(0, 0, 70, 0.7)), url(${back1})`,
-        }}
+        id="enroll"
+        className="relative w-full h-[90vh] flex flex-col justify-center items-center text-center px-4 overflow-hidden"
       >
-        <h2 className="text-white text-4xl md:text-6xl font-bold tracking-wide drop-shadow-md">
-          Enroll in Courses and Skill Up
-        </h2>
+        {/* Universe Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a011b] via-[#150736] to-[#050014] z-0" />
+
+        {/* CSS Animations */}
+        <style>{`
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); opacity: 0.6; }
+      50% { transform: translateY(-15px); opacity: 1; }
+      100% { transform: translateY(0px); opacity: 0.6; }
+    }
+  `}</style>
+
+        {/* Twinkling Stars */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {[...Array(40)].map((_, i) => (
+            <div
+              key={i}
+              className="star"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Floating Emojis Representing Skills */}
+        {[
+          { emoji: "🖥️", top: "15%", left: "20%", delay: "0s" },
+          { emoji: "📘", top: "35%", left: "75%", delay: "1s" },
+          { emoji: "🧠", top: "60%", left: "15%", delay: "1.7s" },
+          { emoji: "💡", top: "50%", left: "60%", delay: "2s" },
+          { emoji: "🚀", top: "70%", left: "80%", delay: "2.5s" },
+        ].map((item, i) => (
+          <div
+            key={i}
+            className="absolute text-2xl md:text-3xl lg:text-4xl pointer-events-none select-none"
+            style={{
+              top: item.top,
+              left: item.left,
+              animation: "float 6s ease-in-out infinite",
+              animationDelay: item.delay,
+            }}
+          >
+            {item.emoji}
+          </div>
+        ))}
+
+        {/* Glowing Orbs */}
+        <div className="absolute w-[600px] h-[600px] bg-indigo-500 opacity-20 rounded-full blur-[160px] top-1/3 left-1/4 z-0" />
+        <div className="absolute w-[400px] h-[400px] bg-purple-700 opacity-15 rounded-full blur-[140px] bottom-1/4 right-1/3 z-0" />
+
+        {/* Content */}
+        <div className="relative z-10 text-white">
+          <h2 className="text-4xl md:text-6xl font-bold tracking-wide drop-shadow-xl">
+            Enroll in Courses and Skill Up
+          </h2>
+          <p className="text-indigo-200 mt-4 max-w-2xl mx-auto text-lg md:text-xl">
+            Start your journey through the CodeMultiVerse. Choose from deep-dive tech courses and skill up across web, AI, DevOps, and beyond.
+          </p>
+        </div>
       </section>
 
       <section className="w-full py-12 px-6 md:px-20">
