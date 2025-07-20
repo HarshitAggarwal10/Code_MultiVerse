@@ -17,15 +17,84 @@ const LearnMore = () => {
         <div>
             <section
                 id="about-home"
-                className="w-full h-[85vh] bg-cover bg-center flex flex-col justify-center items-center text-center pt-10"
-                style={{
-                    backgroundImage: `linear-gradient(rgba(25, 0, 60, 0.6), rgba(0, 0, 70, 0.7)), url(${back1})`,
-                }}
+                className="relative w-full h-[90vh] flex flex-col justify-center items-center text-center px-4 overflow-hidden"
             >
-                <h2 className="text-white text-5xl md:text-6xl font-extrabold tracking-wide drop-shadow-lg animate-fade-in">
-                    Learn More
-                </h2>
+                {/* Gradient Universe Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0a011b] via-[#11052f] to-[#050214] z-0" />
+
+                {/* Animated Stars */}
+                <style>{`
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 0.9; transform: scale(1); }
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(0); opacity: 0.6; }
+      50% { transform: translateY(-15px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 0.6; }
+    }
+  `}</style>
+
+                {/* Stars */}
+                <div className="absolute inset-0 z-0 pointer-events-none">
+                    {[...Array(40)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="star"
+                            style={{
+                                top: `${Math.random() * 100}%`,
+                                left: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * 4}s`,
+                            }}
+                        />
+                    ))}
+                </div>
+
+                {/* Floating Emojis */}
+                {[
+                    { emoji: "🧠", top: "15%", left: "75%", delay: "0s" },
+                    { emoji: "⚛️", top: "30%", left: "10%", delay: "1s" },
+                    { emoji: "🟨", top: "50%", left: "80%", delay: "2s" },
+                    { emoji: "🌐", top: "65%", left: "20%", delay: "1.5s" },
+                    { emoji: "🧑‍💻", top: "75%", left: "60%", delay: "0.7s" },
+                ].map((icon, i) => (
+                    <div
+                        key={i}
+                        className="absolute text-2xl md:text-4xl pointer-events-none select-none"
+                        style={{
+                            top: icon.top,
+                            left: icon.left,
+                            animation: "float 6s ease-in-out infinite",
+                            animationDelay: icon.delay,
+                        }}
+                    >
+                        {icon.emoji}
+                    </div>
+                ))}
+
+                {/* Background Glow Effects */}
+                <div className="absolute w-[500px] h-[500px] bg-indigo-600 opacity-20 rounded-full blur-[160px] top-1/3 left-1/4 z-0" />
+                <div className="absolute w-[400px] h-[400px] bg-purple-700 opacity-15 rounded-full blur-[140px] bottom-1/4 right-1/3 z-0" />
+
+                {/* Main Heading & Subtext */}
+                <div className="relative z-10 text-white max-w-4xl">
+                    <h2 className="text-4xl md:text-6xl font-extrabold drop-shadow-xl mb-4 animate-fade-in">
+                        Learn More
+                    </h2>
+                    <p className="text-indigo-200 text-lg md:text-xl px-4">
+                        Explore in-depth guides, immersive content, and unlock powerful concepts across the multiverse of coding. There's always more to learn, and infinite galaxies to build!
+                    </p>
+                </div>
             </section>
+
 
             <section
                 id="about-container"
