@@ -21,7 +21,7 @@ const app = express();
 
 app.set("trust proxy", 1);
 app.use(cors({
-  origin: "https://code-multi-verse.vercel.app", // ✅ Vercel URL
+  origin: ["https://code-multi-verse.vercel.app", "http://localhost:5173"], // ✅ Vercel URL
   credentials: true, // keep if you ever use cookies
 }));
 

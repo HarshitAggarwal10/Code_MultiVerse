@@ -10,6 +10,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars, Text } from "@react-three/drei";
 import TechLogos3DSection from "../components/TechLogos";
 
+
 const CodeSphere = () => {
     return (
         <mesh rotation={[0.3, 0.3, 0]}>
@@ -36,24 +37,101 @@ const FloatingCodeText = () => {
 const Home = () => {
     return (
         <div>
-            <section
-                id="home"
-                className="relative w-full h-screen bg-cover bg-center flex flex-col justify-center items-center text-center pt-10 overflow-hidden"
-                style={{
-                    backgroundImage: `linear-gradient(rgba(31, 30, 45, 0.3), rgba(10, 8, 113, 0.7)), url(${heroImg})`,
-                }}
-            >
-                {/* Decorative Glows */}
-                <div className="absolute top-10 left-10 w-53 h-52 bg-indigo-400 opacity-20 rounded-full blur-3xl animate-pulse z-0"></div>
-                <div className="absolute bottom-10 right-10 w-52 h-52 bg-yellow-400 opacity-20 rounded-full blur-3xl animate-pulse z-0"></div>
+            <section id="home" className="relative w-full h-screen flex items-center justify-center overflow-hidden text-center px-4">
+                <style>{`
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.1; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
 
-                <div className="w-full max-w-7xl mx-auto px-4 text-white z-10">
-                    <h2 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-wide leading-tight">
+    @keyframes floatEmoji {
+      0% { transform: translateY(0px); opacity: 0.3; }
+      50% { transform: translateY(-20px); opacity: 0.6; }
+      100% { transform: translateY(0px); opacity: 0.3; }
+    }
+
+    @keyframes cometMove {
+      0% { transform: translate(0, 0); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translate(100vw, -100vh); opacity: 0; }
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    .floating-emoji {
+      animation: floatEmoji 10s ease-in-out infinite;
+      font-size: 2.5rem;
+      opacity: 0.4;
+      user-select: none;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.25));
+    }
+
+    .comet {
+      position: absolute;
+      width: 2px;
+      height: 80px;
+      background: linear-gradient(white, transparent);
+      opacity: 0;
+      animation: cometMove 12s linear infinite;
+    }
+  `}</style>
+
+                {/* Layered Space Gradient */}
+                <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#06010d] via-[#0a0c2e] to-[#0c0f1e]" />
+
+                {/* Cosmic Dust Glows */}
+                <div className="absolute w-[600px] h-[600px] bg-purple-800 opacity-20 rounded-full blur-[200px] top-1/4 left-1/3 z-0"></div>
+                <div className="absolute w-[400px] h-[400px] bg-indigo-500 opacity-15 rounded-full blur-[150px] bottom-1/3 right-1/4 z-0"></div>
+                <div className="absolute w-[500px] h-[500px] bg-fuchsia-600 opacity-10 rounded-full blur-[180px] top-1/2 left-1/5 z-0"></div>
+
+                {/* Twinkling Stars */}
+                <div className="absolute inset-0 pointer-events-none z-0">
+                    {[...Array(60)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="star"
+                            style={{
+                                top: `${Math.random() * 100}%`,
+                                left: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * 4}s`,
+                                opacity: Math.random() * 0.7 + 0.3,
+                            }}
+                        />
+                    ))}
+                </div>
+
+                {/* Floating Emojis */}
+                <div className="absolute inset-0 pointer-events-none z-10">
+                    {['⚛️', '💻', '🌐', '📦', '🧠', '📱', '🛰️', '🔧'].map((emoji, index) => (
+                        <div
+                            key={index}
+                            className="floating-emoji absolute text-white"
+                            style={{
+                                top: `${10 + index * 8}%`,
+                                left: `${10 + index * 9}%`,
+                                animationDelay: `${index * 1.2}s`,
+                            }}
+                        >
+                            {emoji}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Hero Content */}
+                <div className="z-20 max-w-4xl mx-auto text-white">
+                    <h2 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight tracking-wide drop-shadow-lg">
                         Step Into the Universe of Code with <br />
-                        <span className="text-yellow-400 inline-block">
+                        <span className="text-yellow-400 inline-block drop-shadow-md">
                             <Typewriter
                                 words={["CodeMultiVerse", "CodeMultiVerse", "CodeMultiVerse"]}
-                                loop={true}
+                                loop
                                 cursor
                                 cursorStyle="_"
                                 typeSpeed={90}
@@ -62,26 +140,29 @@ const Home = () => {
                             />
                         </span>
                     </h2>
-                    <p className="text-lg md:text-base leading-6 md:leading-7 max-w-3xl mx-auto text-indigo-100">
-                        CodeMultiVerse is a futuristic space built for devs and dreamers. Conquer interactive quests, explore AI-driven quizzes, and showcase your code skills in a galaxy full of learning.
+                    <p className="text-lg md:text-xl leading-7 text-indigo-100 max-w-3xl mx-auto drop-shadow-sm">
+                        CodeMultiVerse is a futuristic galaxy built for devs and dreamers.
+                        Conquer interactive quests, explore AI-powered quizzes, and showcase
+                        your coding skills among the stars.
                     </p>
 
-                    <div className="mt-8 flex gap-4 flex-wrap justify-center">
+                    <div className="mt-10 flex gap-6 justify-center flex-wrap">
                         <Link
                             to="/learn-more"
-                            className="text-white bg-blue-900 hover:bg-white hover:text-blue-900 font-semibold px-7 py-3 rounded-md transition"
+                            className="text-white bg-blue-800 hover:bg-white hover:text-blue-800 font-semibold px-7 py-3 rounded-md transition shadow-lg"
                         >
                             Learn More
                         </Link>
                         <Link
                             to="/courses"
-                            className="text-white bg-[#FDC93B] hover:bg-white hover:text-yellow-500 font-semibold px-7 py-3 rounded-md transition"
+                            className="text-white bg-yellow-400 hover:bg-white hover:text-yellow-500 font-semibold px-7 py-3 rounded-md transition shadow-lg"
                         >
                             Explore Tracks
                         </Link>
                     </div>
                 </div>
             </section>
+
 
             <section id="quiz" className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 text-center">
