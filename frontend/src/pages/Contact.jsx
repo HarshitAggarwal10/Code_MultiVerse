@@ -2,12 +2,12 @@
 import { useRef } from 'react';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa';
 import emailjs from '@emailjs/browser';
-import back1   from '../images/back1.jpg';
+import back1 from '../images/back1.jpg';
 
 /* ─ EmailJS keys (must match ones in your EmailJS dashboard) ─ */
-const SERVICE_ID  = 'service_8p86kzp';
+const SERVICE_ID = 'service_8p86kzp';
 const TEMPLATE_ID = 'template_if14rc3';
-const PUBLIC_KEY  = '9ahe1ajax_Tg2Z-4O';   // MUST start with “public_”
+const PUBLIC_KEY = '9ahe1ajax_Tg2Z-4O';   // MUST start with “public_”
 
 export default function Contact() {
   const formRef = useRef(null);
@@ -34,14 +34,83 @@ export default function Contact() {
       {/* Hero banner */}
       <section
         id="about-home"
-        className="w-full h-[85vh] bg-cover bg-center flex flex-col justify-center items-center text-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(25,0,60,.6),rgba(0,0,70,.7)),url(${back1})`
-        }}
+        className="relative w-full h-[90vh] flex flex-col justify-center items-center text-center px-4 overflow-hidden"
       >
-        <h2 className="text-white text-5xl md:text-6xl font-extrabold tracking-wide drop-shadow-lg animate-fade-in">
-          Contact&nbsp;Us
-        </h2>
+        {/* Universe Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a011b] via-[#130530] to-[#050014] z-0" />
+
+        {/* CSS Animations */}
+        <style>{`
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); opacity: 0.6; }
+      50% { transform: translateY(-15px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 0.6; }
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+  `}</style>
+
+        {/* Twinkling Stars */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {[...Array(40)].map((_, i) => (
+            <div
+              key={i}
+              className="star"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Floating Emojis (optional: can be replaced with icons) */}
+        {[
+          { emoji: "📞", top: "20%", left: "15%", delay: "0s" },
+          { emoji: "✉️", top: "75%", left: "80%", delay: "1.2s" },
+          { emoji: "💬", top: "60%", left: "25%", delay: "2s" },
+          { emoji: "📧", top: "30%", left: "70%", delay: "1.5s" },
+        ].map((item, i) => (
+          <div
+            key={i}
+            className="absolute text-2xl md:text-3xl lg:text-4xl pointer-events-none select-none"
+            style={{
+              top: item.top,
+              left: item.left,
+              animation: "float 6s ease-in-out infinite",
+              animationDelay: item.delay,
+            }}
+          >
+            {item.emoji}
+          </div>
+        ))}
+
+        {/* Glows */}
+        <div className="absolute w-[400px] h-[400px] bg-indigo-600 opacity-20 rounded-full blur-[140px] top-1/3 left-1/4 z-0" />
+        <div className="absolute w-[300px] h-[300px] bg-purple-700 opacity-15 rounded-full blur-[120px] bottom-1/4 right-1/3 z-0" />
+
+        {/* Main Text */}
+        <div className="relative z-10">
+          <h2 className="text-white text-5xl md:text-6xl font-extrabold tracking-wide drop-shadow-lg animate-fade-in">
+            Contact&nbsp;Us
+          </h2>
+          <p className="text-indigo-200 mt-4 text-lg max-w-xl px-4">
+            Reach out to the CodeMultiVerse team — whether it’s a query, a collab, or just to say hello, we're always listening in the void 🌌.
+          </p>
+        </div>
       </section>
 
       {/* Contact block */}
@@ -76,7 +145,7 @@ export default function Contact() {
           <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
             {/* Name & email */}
             <div className="flex flex-col md:flex-row gap-4">
-              <Input name="name"  placeholder="Your Name"  />
+              <Input name="name" placeholder="Your Name" />
               <Input name="email" placeholder="Your Email" type="email" />
             </div>
 
@@ -135,7 +204,7 @@ const Socials = () => {
     { icon: <FaFacebookF />, link: 'https://www.facebook.com/thequizopedia/' },
     { icon: <FaInstagram />, link: 'https://www.instagram.com/quizopedia.agk/' },
     { icon: <FaLinkedinIn />, link: 'https://www.linkedin.com/in/quizopedia-quiz-game-935703296/' },
-    { icon: <FaWhatsapp />,  link: 'https://chat.whatsapp.com/IkWddWbzJbf0KKcOpNIJRJ' }
+    { icon: <FaWhatsapp />, link: 'https://chat.whatsapp.com/IkWddWbzJbf0KKcOpNIJRJ' }
   ];
 
   return (

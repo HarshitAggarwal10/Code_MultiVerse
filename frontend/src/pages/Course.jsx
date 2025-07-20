@@ -60,16 +60,81 @@ export default function CoursePage() {
     <>
       {/* Header Section */}
       <section
-        id="about-home"
-        className="w-full h-[85vh] bg-cover bg-center flex flex-col justify-center items-center text-center px-4"
-        style={{
-          backgroundImage: `linear-gradient(rgba(25, 0, 60, 0.6), rgba(0, 0, 70, 0.7)), url(${back1})`,
-        }}
+        id="courses"
+        className="relative w-full h-[90vh] flex flex-col justify-center items-center text-center px-4 overflow-hidden"
       >
-        <h2 className="text-white text-4xl md:text-6xl font-bold drop-shadow-md">Courses</h2>
-        <p className="text-gray-200 mt-4 max-w-2xl mx-auto text-lg md:text-xl">
-          Dive into the multiverse of knowledge. Whether you're a beginner or a pro, there's a course waiting for you!
-        </p>
+        {/* Universe Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a011b] via-[#150736] to-[#050014] z-0" />
+
+        {/* CSS Keyframes */}
+        <style>{`
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); opacity: 0.6; }
+      50% { transform: translateY(-15px); opacity: 1; }
+      100% { transform: translateY(0px); opacity: 0.6; }
+    }
+  `}</style>
+
+        {/* Stars */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="star"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Floating Tech Emojis (Books, Code, Learning) */}
+        {[
+          { emoji: "📘", top: "20%", left: "10%", delay: "0s" },
+          { emoji: "👨‍💻", top: "30%", left: "80%", delay: "1.5s" },
+          { emoji: "📱", top: "60%", left: "20%", delay: "2s" },
+          { emoji: "🧠", top: "75%", left: "70%", delay: "1.2s" },
+          { emoji: "🧑‍🚀", top: "50%", left: "45%", delay: "2.5s" },
+        ].map((item, i) => (
+          <div
+            key={i}
+            className="absolute text-2xl md:text-3xl lg:text-4xl pointer-events-none select-none"
+            style={{
+              top: item.top,
+              left: item.left,
+              animation: "float 6s ease-in-out infinite",
+              animationDelay: item.delay,
+            }}
+          >
+            {item.emoji}
+          </div>
+        ))}
+
+        {/* Glows */}
+        <div className="absolute w-[500px] h-[500px] bg-indigo-500 opacity-20 rounded-full blur-[150px] top-1/3 left-1/4 z-0" />
+        <div className="absolute w-[400px] h-[400px] bg-purple-700 opacity-15 rounded-full blur-[140px] bottom-1/4 right-1/3 z-0" />
+
+        {/* Content */}
+        <div className="relative z-10 text-white">
+          <h2 className="text-4xl md:text-6xl font-extrabold drop-shadow-lg">Courses</h2>
+          <p className="text-indigo-200 mt-4 max-w-2xl mx-auto text-lg md:text-xl">
+            Explore the multiverse of knowledge — whether you're just starting out or launching into advanced tech, there's a course made just for you. Start your journey now!
+          </p>
+        </div>
       </section>
 
       {/* Courses Grid Section */}
