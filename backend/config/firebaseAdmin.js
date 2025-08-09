@@ -1,11 +1,14 @@
 const admin = require("firebase-admin");
-const path = require("path");
 
-if (!process.env.FIREBASE_CREDENTIAL_PATH) {
-  throw new Error("FIREBASE_CREDENTIAL_PATH is not set in environment variables");
+let serviceAccount;
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+} else if (process.env.FIREBASE_CREDENTIAL_PATH) {
+  serviceAccount = require(require("path").resolve(process.env.FIREBASE_CREDENTIAL_PATH));
+} else {
+  throw new Error("Firebase credentials not found in env vars or file path.");
 }
-
-const serviceAccount = require(path.resolve(process.env.FIREBASE_CREDENTIAL_PATH));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

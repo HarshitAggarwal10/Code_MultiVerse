@@ -1,27 +1,40 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaTimes, FaBars, FaUserCircle } from "react-icons/fa";
-import { FiSearch } from "react-icons/fi";
+import { FaTimes, FaBars, FaUserCircle, FaMagic } from "react-icons/fa";
 import { MdLogout, MdOutlineAccountCircle } from "react-icons/md";
 import logo from "../img/newLogoBG.png";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [inspiration, setInspiration] = useState("");
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
   const handleLogout = () => {
-    logout(); // You must have this defined in your AuthContext
+    logout();
     navigate("/auth");
   };
 
   const goToAccount = () => {
     setDropdownOpen(false);
     navigate("/profile");
+  };
+
+  const generateInspiration = () => {
+    const tips = [
+      "Code is like humor. When you have to explain it, it’s bad.",
+      "Before software can be reusable, it first has to be usable.",
+      "Small steps lead to big achievements in coding.",
+      "Debugging: Being the detective in a crime you committed.",
+      "Every great developer you know started as a beginner.",
+      "Talk is cheap. Show me the code."
+    ];
+    const randomTip = tips[Math.floor(Math.random() * tips.length)];
+    setInspiration(randomTip);
+    setTimeout(() => setInspiration(""), 5000); // Hide after 5s
   };
 
   // Close dropdown when clicked outside
@@ -50,15 +63,23 @@ const Navbar = () => {
       </ul>
 
       <div className="hidden md:flex items-center gap-4 relative">
+        {/* Inspire Me Button */}
         <div className="relative">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 pr-4 py-1 rounded-md bg-white/70 text-gray-800 backdrop-blur-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-          />
-          <FiSearch className="absolute left-3 top-2.5 text-gray-500 text-sm" />
+          <button
+            onClick={generateInspiration}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 active:bg-blue-800 transition-all duration-200"
+          >
+            <FaMagic className="text-lg" />
+            Inspire Me
+          </button>
+
+          {/* Popup */}
+          {inspiration && (
+            <div className="absolute top-12 right-0 w-72 bg-white rounded-xl shadow-lg border border-gray-200 p-4 animate-fade-in">
+              <p className="text-gray-700 text-sm leading-relaxed">{inspiration}</p>
+              <div className="absolute top-[-6px] right-6 w-3 h-3 bg-white border-l border-t border-gray-200 rotate-45"></div>
+            </div>
+          )}
         </div>
 
         {user && (
