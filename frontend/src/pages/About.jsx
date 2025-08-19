@@ -15,7 +15,6 @@ const About = () => {
     return (
         <div>
             <section
-                id="about-home"
                 className="relative w-full h-[90vh] flex flex-col justify-center items-center text-center px-4 overflow-hidden"
             >
                 {/* Gradient Universe Background */}
@@ -24,20 +23,24 @@ const About = () => {
                 {/* Keyframe Styles */}
                 <style>{`
     @keyframes twinkle {
-      0%, 100% { opacity: 0.2; transform: scale(0.8); }
-      50% { opacity: 0.9; transform: scale(1); }
+      0%, 100% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1); }
     }
 
     @keyframes float {
-      0% { transform: translateY(0px); opacity: 0.6; }
-      50% { transform: translateY(-20px); opacity: 1; }
-      100% { transform: translateY(0px); opacity: 0.6; }
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+      100% { transform: translateY(0px); }
     }
 
-    @keyframes shoot {
-      0% { transform: translate(-200px, -200px) scale(0.8); opacity: 0; }
-      30% { opacity: 1; }
-      100% { transform: translate(600px, 600px) scale(1.2); opacity: 0; }
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.7); }
     }
 
     .star {
@@ -46,29 +49,41 @@ const About = () => {
       height: 2px;
       background: white;
       border-radius: 50%;
-      animation: twinkle 3s ease-in-out infinite;
+      animation: twinkle 4s ease-in-out infinite;
     }
 
-    .shooting-star {
+    .dust {
       position: absolute;
-      width: 2px;
-      height: 80px;
-      background: linear-gradient(white, transparent);
-      transform: rotate(45deg);
-      animation: shoot 5s linear infinite;
+      width: 1px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      animation: float 15s linear infinite;
     }
   `}</style>
 
                 {/* Stars */}
                 <div className="absolute inset-0 z-0 pointer-events-none">
-                    {[...Array(50)].map((_, i) => (
+                    {[...Array(40)].map((_, i) => (
                         <div
                             key={i}
                             className="star"
                             style={{
                                 top: `${Math.random() * 100}%`,
                                 left: `${Math.random() * 100}%`,
-                                animationDelay: `${Math.random() * 5}s`,
+                                animationDelay: `${Math.random() * 6}s`,
+                            }}
+                        />
+                    ))}
+                    {/* Space Dust */}
+                    {[...Array(20)].map((_, i) => (
+                        <div
+                            key={`dust-${i}`}
+                            className="dust"
+                            style={{
+                                top: `${Math.random() * 100}%`,
+                                left: `${Math.random() * 100}%`,
+                                animationDelay: `${Math.random() * 10}s`,
                             }}
                         />
                     ))}
@@ -98,7 +113,7 @@ const About = () => {
                 ))}
 
                 {/* Emoji Orbit Ring */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0 w-[200px] h-[200px] animate-spin-slow rounded-full border border-indigo-600/10 flex items-center justify-center gap-3">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0 w-[200px] h-[200px] rounded-full border border-indigo-600/10 flex items-center justify-center gap-3 animate-spin-slow" style={{ animation: "glowPulse 3s infinite ease-in-out" }}>
                     {["💻", "🧪", "🔧", "🔭", "📡", "⚙️"].map((emoji, i) => (
                         <span key={i} className="text-white/40 text-lg">{emoji}</span>
                     ))}
@@ -109,7 +124,7 @@ const About = () => {
                 <div className="absolute w-[400px] h-[400px] bg-purple-700 opacity-15 rounded-full blur-[140px] bottom-1/4 right-1/3 z-0" />
 
                 {/* Text Content */}
-                <div className="relative z-10 max-w-4xl text-white">
+                <div className="relative z-10 max-w-4xl text-white animate-[fadeInUp_1s_ease-out]">
                     <h2 className="text-4xl md:text-6xl font-extrabold tracking-wide drop-shadow-lg mb-6">
                         About CodeMultiVerse
                     </h2>
@@ -119,20 +134,47 @@ const About = () => {
                 </div>
             </section>
 
-            <section
-                id="about-container"
-                className="flex flex-col md:flex-row items-center px-8 py-20 gap-12 max-w-7xl mx-auto"
-            >
-                <div className="w-full md:w-3/5 md:pr-14">
+            <section className="relative flex flex-col md:flex-row items-center px-8 py-20 gap-12 max-w-7xl mx-auto overflow-hidden">
+                {/* Soft gradient background accent */}
+                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-100/40 rounded-full blur-[120px] -z-10"></div>
+                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-50/30 rounded-full blur-[100px] -z-10"></div>
+
+                {/* Floating Emojis */}
+                {[
+                    { emoji: "💻", top: "15%", left: "5%", delay: "0s" },
+                    { emoji: "⚛️", top: "70%", left: "10%", delay: "0.8s" },
+                    { emoji: "📡", top: "25%", left: "90%", delay: "1.2s" },
+                    { emoji: "🧠", top: "80%", left: "85%", delay: "2s" },
+                    { emoji: "🔧", top: "50%", left: "0%", delay: "1.6s" },
+                    { emoji: "🧑‍💻", top: "5%", left: "80%", delay: "2.5s" },
+                ].map((icon, i) => (
+                    <div
+                        key={i}
+                        className="absolute text-2xl md:text-3xl lg:text-4xl pointer-events-none select-none opacity-50"
+                        style={{
+                            top: icon.top,
+                            left: icon.left,
+                            animation: "floatIcon 6s ease-in-out infinite",
+                            animationDelay: icon.delay,
+                        }}
+                    >
+                        {icon.emoji}
+                    </div>
+                ))}
+
+                {/* Left Image Section */}
+                <div className="w-full md:w-3/5 md:pr-14 animate-[fadeInUp_0.8s_ease-out] relative z-10">
                     <img
                         src={aImg}
                         alt="CodeMultiVerse Illustration"
-                        className="w-full max-h-[550px] object-contain rounded-xl"
+                        className="w-full max-h-[550px] object-contain rounded-2xl hover:scale-[1.02] transition-transform duration-500"
                     />
                 </div>
-                <div className="w-full md:w-2/5 space-y-6">
+
+                {/* Right Content Section */}
+                <div className="w-full md:w-2/5 space-y-6 animate-[fadeInUp_1s_ease-out] relative z-10">
                     <h2 className="text-[#1f2937] text-3xl md:text-4xl font-bold leading-tight">
-                        Welcome to CodeMultiVerse
+                        Welcome to <span className="text-indigo-600">CodeMultiVerse</span>
                     </h2>
                     <p className="text-gray-600 text-base leading-relaxed">
                         CodeMultiVerse is a dynamic tech community and learning platform where innovation meets collaboration.
@@ -140,8 +182,13 @@ const About = () => {
                         exciting coding challenges, and a vibrant support network.
                     </p>
 
-                    <div className="flex items-start gap-4 mt-6">
-                        <img src={fe1} alt="feature1" className="w-12" />
+                    {/* Feature 1 */}
+                    <div className="flex items-start gap-4 mt-6 group">
+                        <img
+                            src={fe1}
+                            alt="feature1"
+                            className="w-12 transition-transform duration-300 group-hover:scale-110"
+                        />
                         <div>
                             <h5 className="text-lg font-semibold text-[#1f2937]">Interactive Challenges</h5>
                             <p className="text-gray-500 text-sm">
@@ -150,8 +197,13 @@ const About = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-start gap-4 mt-4">
-                        <img src={fe2} alt="feature2" className="w-12" />
+                    {/* Feature 2 */}
+                    <div className="flex items-start gap-4 mt-4 group">
+                        <img
+                            src={fe2}
+                            alt="feature2"
+                            className="w-12 transition-transform duration-300 group-hover:scale-110"
+                        />
                         <div>
                             <h5 className="text-lg font-semibold text-[#1f2937]">Lifetime Access</h5>
                             <p className="text-gray-500 text-sm">
@@ -160,6 +212,18 @@ const About = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Animations */}
+                <style>{`
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+  `}</style>
             </section>
 
             <Experts />
