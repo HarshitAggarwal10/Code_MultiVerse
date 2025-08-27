@@ -5,7 +5,7 @@ import api from "../utils/api";
 import Tech3DScene from "../components/Model";
 import loadRazorpay from "../utils/loadRazorpay";
 
-const RZP_KEY = "rzp_test_DHyKCkAB21NWFU";       // ← keep your key here
+const RZP_KEY = "rzp_test_RASdlXTkey6fSk";       // ← keep your key here
 
 export default function Domains() {
   const [domains, setDomains] = useState([]);
